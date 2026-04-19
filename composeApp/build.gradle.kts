@@ -7,6 +7,10 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
+    alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.sentry)
 
 }
 
@@ -24,6 +28,8 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            // Required when using NativeSQLiteDriver
+            linkerOpts.add("-lsqlite3")
         }
     }
     
@@ -34,6 +40,11 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.ktor.client.okhttp)
+
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.config)
+            implementation(libs.firebase.database)
+            implementation(libs.kotlinx.coroutines.play.services)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -61,7 +72,11 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
+
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
+
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
@@ -72,11 +87,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.ucb.app"
+    namespace = "com.ucb.food"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.ucb.app"
+        applicationId = "com.ucb.food"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -99,6 +114,32 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.database)
+    implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
+
+    // Add the dependencies for the Remote Config and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-config")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation(libs.firebase.messaging)
     debugImplementation(libs.compose.uiTooling)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+tasks.register<Exec>("downloadTranslations") {
+    group = "localization"
+    description = "Descarga las traducciones desde Loco"
+
+    commandLine(
+        "curl",
+        "-o", "src/commonMain/composeResources/values/strings.xml",
+        // ¡Aquí es donde va tu key!
+        "https://localise.biz/api/export/locale/en-US.xml?format=android&key=n2bQjb_C308tkCXzC7gAgtO1LbsgmmAb"
+    )
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "421945307745",
+    "project_id": "proyecto-mvi-6e251",
+    "storage_bucket": "proyecto-mvi-6e251.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:421945307745:android:5313d71a296c232aeab020",
+        "android_client_info": {
+          "package_name": "com.ucb.food"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFfx71a56ZESH54VjLrVHsaawImdWrlNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
