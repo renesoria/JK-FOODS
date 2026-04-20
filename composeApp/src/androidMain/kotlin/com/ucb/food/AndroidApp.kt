@@ -2,6 +2,7 @@ package com.ucb.food
 
 import android.app.Application
 import com.ucb.food.di.getModules
+import com.ucb.food.work.LogScheduler
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -16,5 +17,8 @@ class AndroidApp: Application() {
             androidContext(this@AndroidApp)
             modules(getModules())
         }
+
+        // Programar el WorkManager al iniciar la app
+        LogScheduler(this).schedulePeriodicaUpload()
     }
 }
