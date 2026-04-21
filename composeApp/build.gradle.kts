@@ -76,6 +76,7 @@ kotlin {
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(project(":designsystem"))
         }
 
         iosMain.dependencies {
