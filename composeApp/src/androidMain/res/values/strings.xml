@@ -1,3 +1,23 @@
-<resources>
-    <string name="app_name">KotlinProject</string>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Loco xml export: Android strings
+ Project: Untitled project
+ Locale: es-BO, Spanish (Bolivia)
+ Exported by: josecamachos maker
+ Exported at: Wed, 22 Apr 2026 13:39:32 -0400
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Food App</string>
+    <string name="explore">Explorar</string>
+    <string name="sign_in_title">Registrar</string>
+    <string name="sign_in_email">Email</string>
+    <string name="sign_in_password">Contraseña</string>
+    <string name="sign_in_btn">Registrarse</string>
+    <string name="login_title">Registrarse(Prueba)</string>
+    <string name="login_email">Email Direccion</string>
+    <string name="login_password">Contraseña</string>
+    <string name="login_btn">Registrarse</string>
+    <string name="github_find">Encontrar</string>
+    <string name="github_title">Encontrar tu avatar de GitHub</string>
+    <string name="github_text_hint">Usuario de GitHub</string>
 </resources>

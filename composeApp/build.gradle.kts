@@ -141,7 +141,6 @@ tasks.register<Exec>("downloadTranslations") {
     commandLine(
         "curl",
         "-o", "src/commonMain/composeResources/values/strings.xml",
-        // ¡Aquí es donde va tu key!
-        "https://localise.biz/api/export/locale/en-US.xml?format=android&key=n2bQjb_C308tkCXzC7gAgtO1LbsgmmAb"
+        "https://localise.biz/api/export/locale/es-BO.xml?format=android&key=n2bQjb_C308tkCXzC7gAgtO1LbsgmmAb"
     )
 }
