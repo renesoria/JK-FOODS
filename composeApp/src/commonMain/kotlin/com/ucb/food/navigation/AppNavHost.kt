@@ -9,6 +9,7 @@ import com.ucb.food.crypto.presentation.screen.CryptoScreen
 import com.ucb.food.fakestore.presentation.screen.StoreScreen
 import com.ucb.food.github.presentation.screen.GithubScreen
 import com.ucb.food.movie.presentation.screen.MovieScreen
+import com.ucb.food.firebase.FirebaseTestScreen
 
 @Composable
 fun AppNavHost() {
@@ -17,7 +18,7 @@ fun AppNavHost() {
     val navController = rememberNavController()
 
 
-    NavHost(navController = navController, startDestination = NavRoute.FakeStore) {
+    NavHost(navController = navController, startDestination = NavRoute.FirebaseTest) {
         composable<NavRoute.Profile> {
 
         }
@@ -39,6 +40,9 @@ fun AppNavHost() {
         }
         composable<NavRoute.CountryStore> {
             CountryScreen()
+        }
+        composable<NavRoute.FirebaseTest> {
+            FirebaseTestScreen()
         }
     }
 }

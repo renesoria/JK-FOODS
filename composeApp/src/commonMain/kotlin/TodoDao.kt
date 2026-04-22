@@ -1,4 +1,5 @@
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
@@ -13,4 +14,10 @@ interface TodoDao {
 
     @Query("SELECT * FROM TodoEntity")
     fun getAllAsFlow(): Flow<List<TodoEntity>>
+
+    @Delete
+    suspend fun delete(item: TodoEntity)
+
+    @Query("DELETE FROM TodoEntity")
+    suspend fun deleteAll()
 }
