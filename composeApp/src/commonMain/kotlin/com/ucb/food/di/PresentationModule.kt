@@ -10,6 +10,7 @@ import com.ucb.food.movie.presentation.viewmodel.MovieViewModel
 import com.ucb.food.nm.login.presentation.viewmodel.LoginViewModel
 import com.ucb.food.product_detail.presentation.viewmodel.ProductDetailViewModel
 import com.ucb.food.signin.presentation.viewmodel.SigninViewModel
+import com.ucb.food.firebase.FirebaseTestViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -26,4 +27,5 @@ val presentationModule = module {
     viewModelOf(::CryptoViewModel)
     viewModelOf(::FakeStoreViewModel)
     viewModelOf(::CountryViewModel)
+    viewModelOf(::FirebaseTestViewModel)
 }

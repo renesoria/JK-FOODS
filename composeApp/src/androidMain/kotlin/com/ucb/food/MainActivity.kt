@@ -35,7 +35,8 @@ class MainActivity : ComponentActivity() {
 
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 3600
+            // Bajamos esto a 0 para que durante las pruebas los cambios se vean al instante
+            minimumFetchIntervalInSeconds = 0
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
 
@@ -48,8 +49,11 @@ class MainActivity : ComponentActivity() {
 
         remoteConfig.setDefaultsAsync(valoresPorDefecto)
 
+        // Forzamos la descarga y activación inmediata
         remoteConfig.fetchAndActivate().addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
+                val updated = task.result
+                Log.d("RemoteConfig", "Configuración actualizada: $updated")
                 println("RemoteConfig: ¡Datos descargados y activados correctamente!")
             } else {
                 println("RemoteConfig: Error al intentar descargar los datos.")
@@ -58,10 +62,10 @@ class MainActivity : ComponentActivity() {
 
         remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
             override fun onUpdate(configUpdate: ConfigUpdate) {
-                if (configUpdate.updatedKeys.contains("texto_bienvenida")) {
-                    remoteConfig.activate().addOnCompleteListener {
-                        println("RemoteConfig: ¡El nuevo texto ya está listo para usarse!")
-                    }
+                // Si algo cambia en la consola, lo activamos inmediatamente
+                remoteConfig.activate().addOnCompleteListener {
+                    Log.d("RemoteConfig", "Configuración actualizada en tiempo real")
+                    // Esto forzará a que la UI se entere si usas estados reactivos
                 }
             }
 

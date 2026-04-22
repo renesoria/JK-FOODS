@@ -28,4 +28,7 @@ sealed class NavRoute {
 
     @Serializable
     object CountryStore: NavRoute()
+
+    @Serializable
+    object FirebaseTest: NavRoute()
 }
