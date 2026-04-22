@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="app_name">Food App</string>
     <string name="explore">Explorar</string>
@@ -13,6 +12,7 @@
     <string name="github_find">Encontrar</string>
     <string name="github_title">Encontrar tu avatar de GitHub</string>
     <string name="github_text_hint">Usuario de GitHub</string>
+
     <string name="category_electronics">Electrónica</string>
     <string name="category_jewelery">Joyería</string>
     <string name="category_men_clothing">Ropa de hombre</string>

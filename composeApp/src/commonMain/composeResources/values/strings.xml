@@ -12,4 +12,9 @@
     <string name="github_find">Find</string>
     <string name="github_title">Find your Github Avatar</string>
     <string name="github_text_hint">GitHub username</string>
+
+    <string name="category_electronics">Electronics</string>
+    <string name="category_jewelery">Jewelery</string>
+    <string name="category_men_clothing">Men\'s Clothing</string>
+    <string name="category_women_clothing">Women\'s Clothing</string>
 </resources>
