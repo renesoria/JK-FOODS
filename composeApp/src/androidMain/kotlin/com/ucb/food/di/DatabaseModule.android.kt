@@ -9,4 +9,6 @@ import org.koin.dsl.module
 actual val databaseModule = module {
     single { getRoomDatabase(getDatabaseBuilder(androidContext())) }
     single { get<AppDatabase>().getDao() }
+    single { get<AppDatabase>().getEventDao() }
+    single { get<AppDatabase>().getConfigDao() }
 }

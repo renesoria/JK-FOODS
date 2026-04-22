@@ -23,6 +23,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.ucb.food.work.EventWorker
+import com.ucb.food.work.ConfigWorker
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,8 +31,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setupProcessObserver()
+        launchInitialSync()
 
-        // --- CÓDIGO PARA EL TOKEN ---
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w("FCM_TOKEN", "Error obteniendo el token", task.exception)
@@ -40,7 +41,6 @@ class MainActivity : ComponentActivity() {
             val token = task.result
             Log.d("FCM_TOKEN", "Mi Token es: $token")
         }
-        // ----------------------------
 
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
@@ -76,6 +76,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             App()
         }
+    }
+
+    private fun launchInitialSync() {
+        val syncRequest = OneTimeWorkRequestBuilder<ConfigWorker>().build()
+        WorkManager.getInstance(this).enqueue(syncRequest)
     }
 
     private fun setupProcessObserver() {
