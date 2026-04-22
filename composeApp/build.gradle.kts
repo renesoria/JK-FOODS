@@ -46,6 +46,9 @@ kotlin {
             implementation(libs.firebase.config)
             implementation(libs.firebase.database)
             implementation(libs.kotlinx.coroutines.play.services)
+            
+            // Necesario para ProcessLifecycleOwner
+            implementation("androidx.lifecycle:lifecycle-process:2.8.7")
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)

@@ -6,10 +6,11 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [TodoEntity::class], version = 1)
+@Database(entities = [TodoEntity::class, AppEventEntity::class], version = 2)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): TodoDao
+    abstract fun getEventDao(): AppEventDao
 }
 
 // The Room compiler generates the `actual` implementations.

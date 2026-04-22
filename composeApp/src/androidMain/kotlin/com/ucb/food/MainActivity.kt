@@ -8,6 +8,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.remoteconfig.ConfigUpdate
@@ -16,11 +22,14 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.ucb.food.work.EventWorker
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        setupProcessObserver()
 
         // --- CÓDIGO PARA EL TOKEN ---
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
@@ -35,7 +44,6 @@ class MainActivity : ComponentActivity() {
 
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
-            // Bajamos esto a 0 para que durante las pruebas los cambios se vean al instante
             minimumFetchIntervalInSeconds = 0
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
@@ -49,33 +57,47 @@ class MainActivity : ComponentActivity() {
 
         remoteConfig.setDefaultsAsync(valoresPorDefecto)
 
-        // Forzamos la descarga y activación inmediata
         remoteConfig.fetchAndActivate().addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 val updated = task.result
                 Log.d("RemoteConfig", "Configuración actualizada: $updated")
-                println("RemoteConfig: ¡Datos descargados y activados correctamente!")
-            } else {
-                println("RemoteConfig: Error al intentar descargar los datos.")
             }
         }
 
         remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
             override fun onUpdate(configUpdate: ConfigUpdate) {
-                // Si algo cambia en la consola, lo activamos inmediatamente
-                remoteConfig.activate().addOnCompleteListener {
-                    Log.d("RemoteConfig", "Configuración actualizada en tiempo real")
-                    // Esto forzará a que la UI se entere si usas estados reactivos
-                }
+                remoteConfig.activate()
             }
 
             override fun onError(error: FirebaseRemoteConfigException) {
-                println("RemoteConfig Error en tiempo real: ${error.message}")
+                Log.e("RemoteConfig", "Error: ${error.message}")
             }
         })
         setContent {
             App()
         }
+    }
+
+    private fun setupProcessObserver() {
+        ProcessLifecycleOwner.get().lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> scheduleEventWorker("OPEN")
+                Lifecycle.Event.ON_STOP -> scheduleEventWorker("CLOSE")
+                else -> {}
+            }
+        })
+    }
+
+    private fun scheduleEventWorker(type: String) {
+        val data = Data.Builder()
+            .putString("EVENT_TYPE", type)
+            .build()
+
+        val workRequest = OneTimeWorkRequestBuilder<EventWorker>()
+            .setInputData(data)
+            .build()
+
+        WorkManager.getInstance(this).enqueue(workRequest)
     }
 }
 
