@@ -1,5 +1,7 @@
 package com.ucb.food.di
 
+import com.ucb.food.config.data.repository.ConfigRepositoryImpl
+import com.ucb.food.config.domain.repository.ConfigRepository
 import com.ucb.food.fakestore.data.datasource.ProductRemoteDatasource
 import com.ucb.food.fakestore.data.repository.StoreRepositoryImpl
 import com.ucb.food.fakestore.data.service.ProductService
@@ -27,6 +29,9 @@ val dataModule = module {
     // FakeStore
     singleOf(::ProductService).bind<ProductRemoteDatasource>()
     singleOf(::StoreRepositoryImpl).bind<StoreRepository>()
+
+    // Config (Ejercicio 1)
+    singleOf(::ConfigRepositoryImpl).bind<ConfigRepository>()
 
     single { FirebaseManager() }
 }

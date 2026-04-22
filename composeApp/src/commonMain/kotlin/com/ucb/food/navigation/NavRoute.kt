@@ -31,4 +31,7 @@ sealed class NavRoute {
 
     @Serializable
     object FirebaseTest: NavRoute()
+
+    @Serializable
+    object Config: NavRoute()
 }

@@ -10,6 +10,7 @@ import com.ucb.food.fakestore.presentation.screen.StoreScreen
 import com.ucb.food.github.presentation.screen.GithubScreen
 import com.ucb.food.movie.presentation.screen.MovieScreen
 import com.ucb.food.firebase.FirebaseTestScreen
+import com.ucb.food.config.presentation.screen.ConfigScreen
 
 @Composable
 fun AppNavHost() {
@@ -18,7 +19,7 @@ fun AppNavHost() {
     val navController = rememberNavController()
 
 
-    NavHost(navController = navController, startDestination = NavRoute.FirebaseTest) {
+    NavHost(navController = navController, startDestination = NavRoute.Config) {
         composable<NavRoute.Profile> {
 
         }
@@ -43,6 +44,9 @@ fun AppNavHost() {
         }
         composable<NavRoute.FirebaseTest> {
             FirebaseTestScreen()
+        }
+        composable<NavRoute.Config> {
+            ConfigScreen()
         }
     }
 }
