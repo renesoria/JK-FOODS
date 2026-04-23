@@ -14,33 +14,36 @@ import com.ucb.food.firebase.FirebaseTestScreen
 @Composable
 fun AppNavHost() {
 
-
     val navController = rememberNavController()
 
-
-    NavHost(navController = navController, startDestination = NavRoute.FirebaseTest) {
+    // Cambiamos el startDestination a Movies porque FirebaseTest está roto actualmente
+    NavHost(navController = navController, startDestination = NavRoute.Movies) {
         composable<NavRoute.Profile> {
-
         }
 
         composable<NavRoute.ProfileEdit> {
-
         }
+        
         composable<NavRoute.Github> {
             GithubScreen()
         }
+        
         composable<NavRoute.Movies> {
             MovieScreen()
         }
+        
         composable<NavRoute.Crypto> {
             CryptoScreen()
         }
+        
         composable<NavRoute.FakeStore> {
             StoreScreen()
         }
+        
         composable<NavRoute.CountryStore> {
             CountryScreen()
         }
+
         composable<NavRoute.FirebaseTest> {
             FirebaseTestScreen()
         }

@@ -1,3 +1,5 @@
+package com.ucb.food
+
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
