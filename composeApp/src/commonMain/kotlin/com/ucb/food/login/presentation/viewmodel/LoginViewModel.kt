@@ -2,53 +2,51 @@ package com.ucb.food.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ucb.food.login.domain.model.LoginModel
-import com.ucb.food.login.domain.usecase.DoLoginUseCase
 import com.ucb.food.login.presentation.state.LoginEffect
 import com.ucb.food.login.presentation.state.LoginEvent
-import com.ucb.food.login.presentation.state.LoginUiState
-import kotlinx.coroutines.flow.MutableSharedFlow
+import com.ucb.food.login.presentation.state.LoginState
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel(
-    val loginUseCase: DoLoginUseCase
-): ViewModel() {
-
-    //mutable  observable (state)
-    private val _state = MutableStateFlow(LoginUiState())
+class LoginModuleViewModel : ViewModel() {
+    private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
 
-    //effect mutable observable ( shared)
-    private val _effect = MutableSharedFlow<LoginEffect>()
-    val effect = _effect.asSharedFlow()
+    private val _effect = Channel<LoginEffect>()
+    val effect = _effect.receiveAsFlow()
 
-    //events
     fun onEvent(event: LoginEvent) {
-        when(event) {
-            LoginEvent.OnClick -> sendLogin()
-            is LoginEvent.OnEmailChanged -> TODO()
-            is LoginEvent.OnPasswordChanged -> TODO()
-        }
-    }
-
-    private fun sendLogin() {
-        val model = LoginModel(
-            _state.value.email,
-            _state.value.password
-        )
-        viewModelScope.launch {
-            loginUseCase.invoke(model)
-        }
-
-    }
-
-    //effects
-    private fun emit(effect: LoginEffect) {
-        viewModelScope.launch {
-            _effect.emit(effect)
+        when (event) {
+            is LoginEvent.OnMobileNumberChange -> {
+                _state.update { it.copy(mobileNumber = event.mobileNumber) }
+            }
+            is LoginEvent.OnPasswordChange -> {
+                _state.update { it.copy(password = event.password) }
+            }
+            LoginEvent.OnLoginClick -> {
+                // Simple login logic for now
+                _state.update { it.copy(isLoading = true) }
+                viewModelScope.launch {
+                    // simulate login
+                    kotlinx.coroutines.delay(1000)
+                    _state.update { it.copy(isLoading = false) }
+                    _effect.send(LoginEffect.LoginSuccess)
+                }
+            }
+            LoginEvent.OnSignUpClick -> {
+                viewModelScope.launch {
+                    _effect.send(LoginEffect.NavigateToSignUp)
+                }
+            }
+            LoginEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    _effect.send(LoginEffect.NavigateBack)
+                }
+            }
         }
     }
 }

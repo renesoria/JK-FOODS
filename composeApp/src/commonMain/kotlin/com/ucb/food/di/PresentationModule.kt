@@ -8,6 +8,8 @@ import com.ucb.food.github.presentation.viewmodel.GithubViewModel
 import com.ucb.food.increment.presentation.viewmodel.IncrementViewModel
 import com.ucb.food.movie.presentation.viewmodel.MovieViewModel
 import com.ucb.food.nm.login.presentation.viewmodel.LoginViewModel
+import com.ucb.food.login.presentation.viewmodel.LoginModuleViewModel
+import com.ucb.food.home.presentation.viewmodel.HomeViewModel
 import com.ucb.food.product_detail.presentation.viewmodel.ProductDetailViewModel
 import com.ucb.food.signin.presentation.viewmodel.SigninViewModel
 import com.ucb.food.firebase.FirebaseTestViewModel
@@ -16,11 +18,12 @@ import org.koin.dsl.module
 
 val presentationModule = module {
 
-    viewModelOf(
-        ::ProductDetailViewModel)
+    viewModelOf(::ProductDetailViewModel)
     viewModelOf(::CounterViewModel)
     viewModelOf(::IncrementViewModel)
     viewModelOf(::LoginViewModel)
+    viewModelOf(::LoginModuleViewModel)
+    viewModelOf(::HomeViewModel)
     viewModelOf(::GithubViewModel)
     viewModelOf(::SigninViewModel)
     viewModelOf(::MovieViewModel)

@@ -10,6 +10,9 @@ import com.ucb.food.fakestore.presentation.screen.StoreScreen
 import com.ucb.food.github.presentation.screen.GithubScreen
 import com.ucb.food.movie.presentation.screen.MovieScreen
 import com.ucb.food.firebase.FirebaseTestScreen
+import com.ucb.food.login.presentation.screen.LoginScreen
+import com.ucb.food.signin.presentation.screen.SigninScreen
+import com.ucb.food.home.presentation.screen.HomeScreen
 
 @Composable
 fun AppNavHost() {
@@ -18,7 +21,7 @@ fun AppNavHost() {
     val navController = rememberNavController()
 
 
-    NavHost(navController = navController, startDestination = NavRoute.FirebaseTest) {
+    NavHost(navController = navController, startDestination = NavRoute.Home) {
         composable<NavRoute.Profile> {
 
         }
@@ -43,6 +46,22 @@ fun AppNavHost() {
         }
         composable<NavRoute.FirebaseTest> {
             FirebaseTestScreen()
+        }
+        composable<NavRoute.Login> {
+            LoginScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSignUp = { navController.navigate(NavRoute.SignUp) },
+                onLoginSuccess = { navController.navigate(NavRoute.Home) }
+            )
+        }
+        composable<NavRoute.SignUp> {
+            SigninScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToLogin = { navController.navigate(NavRoute.Login) }
+            )
+        }
+        composable<NavRoute.Home> {
+            HomeScreen()
         }
     }
 }
