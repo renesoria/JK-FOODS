@@ -10,6 +10,9 @@ import com.ucb.food.fakestore.presentation.screen.StoreScreen
 import com.ucb.food.github.presentation.screen.GithubScreen
 import com.ucb.food.movie.presentation.screen.MovieScreen
 import com.ucb.food.firebase.FirebaseTestScreen
+import com.ucb.food.region.presentation.screen.RegionScreen
+import com.ucb.food.region.presentation.viewmodel.RegionViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavHost() {
@@ -18,7 +21,7 @@ fun AppNavHost() {
     val navController = rememberNavController()
 
 
-    NavHost(navController = navController, startDestination = NavRoute.FirebaseTest) {
+    NavHost(navController = navController, startDestination = NavRoute.Regions) {
         composable<NavRoute.Profile> {
 
         }
@@ -43,6 +46,10 @@ fun AppNavHost() {
         }
         composable<NavRoute.FirebaseTest> {
             FirebaseTestScreen()
+        }
+        composable<NavRoute.Regions> {
+            val viewModel: RegionViewModel = koinViewModel()
+            RegionScreen(viewModel)
         }
     }
 }

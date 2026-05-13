@@ -13,6 +13,8 @@ import com.ucb.food.movie.data.repository.MovieRepositoryImpl
 import com.ucb.food.movie.data.service.MovieService
 import com.ucb.food.movie.domain.repository.MovieRepository
 import com.ucb.food.portafolio.data.datasource.FirebaseManager
+import com.ucb.food.region.data.repository.RegionRepositoryImpl
+import com.ucb.food.region.domain.repository.RegionRepository
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -28,5 +30,6 @@ val dataModule = module {
     singleOf(::ProductService).bind<ProductRemoteDatasource>()
     singleOf(::StoreRepositoryImpl).bind<StoreRepository>()
 
+    singleOf(::RegionRepositoryImpl).bind<RegionRepository>()
     single { FirebaseManager() }
 }

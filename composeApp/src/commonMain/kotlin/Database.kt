@@ -6,12 +6,16 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [TodoEntity::class, AppEventEntity::class, ConfigEntity::class], version = 3)
+import com.ucb.food.region.data.local.dao.RegionDao
+import com.ucb.food.region.data.local.entity.RegionEntity
+
+@Database(entities = [TodoEntity::class, AppEventEntity::class, ConfigEntity::class, RegionEntity::class], version = 4)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): TodoDao
     abstract fun getEventDao(): AppEventDao
     abstract fun getConfigDao(): ConfigDao
+    abstract fun getRegionDao(): RegionDao
 }
 
 @Suppress("KotlinNoActualForExpect")

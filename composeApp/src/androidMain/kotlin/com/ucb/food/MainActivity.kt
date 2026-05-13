@@ -24,6 +24,9 @@ import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.ucb.food.work.EventWorker
 import com.ucb.food.work.ConfigWorker
+import com.ucb.food.work.RegionSyncWorker
+import androidx.work.PeriodicWorkRequestBuilder
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +35,7 @@ class MainActivity : ComponentActivity() {
 
         setupProcessObserver()
         launchInitialSync()
+        schedulePeriodicRegionSync()
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
@@ -81,6 +85,12 @@ class MainActivity : ComponentActivity() {
     private fun launchInitialSync() {
         val syncRequest = OneTimeWorkRequestBuilder<ConfigWorker>().build()
         WorkManager.getInstance(this).enqueue(syncRequest)
+    }
+
+    private fun schedulePeriodicRegionSync() {
+        val regionSyncRequest = PeriodicWorkRequestBuilder<RegionSyncWorker>(15, TimeUnit.MINUTES)
+            .build()
+        WorkManager.getInstance(this).enqueue(regionSyncRequest)
     }
 
     private fun setupProcessObserver() {

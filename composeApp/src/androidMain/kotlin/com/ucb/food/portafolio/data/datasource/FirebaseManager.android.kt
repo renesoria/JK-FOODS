@@ -16,4 +16,14 @@ actual class FirebaseManager actual constructor(){
             println("Firebase Android: Error - ${e.message}")
         }
     }
+
+    actual suspend fun getData(path: String): String? {
+        return try {
+            val snapshot = database.child(path).get().await()
+            snapshot.value?.toString()
+        } catch (e: Exception) {
+            println("Firebase Android: Error al obtener datos - ${e.message}")
+            null
+        }
+    }
 }
