@@ -77,6 +77,9 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
 
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.no.arg)
+
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(project(":designsystem"))

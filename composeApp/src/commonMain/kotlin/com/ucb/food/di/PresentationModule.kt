@@ -13,11 +13,13 @@ import com.ucb.food.home.presentation.viewmodel.HomeViewModel
 import com.ucb.food.product_detail.presentation.viewmodel.ProductDetailViewModel
 import com.ucb.food.signin.presentation.viewmodel.SigninViewModel
 import com.ucb.food.firebase.FirebaseTestViewModel
+import com.ucb.food.onboarding.presentation.viewmodel.OnboardingViewModel
+import com.ucb.food.navigation.NavigationViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val presentationModule = module {
-
+    viewModelOf(::NavigationViewModel)
     viewModelOf(::ProductDetailViewModel)
     viewModelOf(::CounterViewModel)
     viewModelOf(::IncrementViewModel)
@@ -31,4 +33,5 @@ val presentationModule = module {
     viewModelOf(::FakeStoreViewModel)
     viewModelOf(::CountryViewModel)
     viewModelOf(::FirebaseTestViewModel)
+    viewModelOf(::OnboardingViewModel)
 }

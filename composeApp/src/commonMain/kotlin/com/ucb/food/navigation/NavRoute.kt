@@ -40,4 +40,7 @@ sealed class NavRoute {
 
     @Serializable
     object Home: NavRoute()
+
+    @Serializable
+    object Onboarding: NavRoute()
 }
