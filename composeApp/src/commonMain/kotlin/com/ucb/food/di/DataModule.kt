@@ -13,18 +13,41 @@ import com.ucb.food.movie.data.repository.MovieRepositoryImpl
 import com.ucb.food.movie.data.service.MovieService
 import com.ucb.food.movie.domain.repository.MovieRepository
 import com.ucb.food.portafolio.data.datasource.FirebaseManager
+import com.ucb.food.login.data.repository.AuthRepositoryImpl
+import com.ucb.food.login.data.service.FirebaseAuthService
+import com.ucb.food.login.domain.repository.AuthenticationRepository
 import com.ucb.food.onboarding.data.repository.OnboardingRepositoryImpl
 import com.ucb.food.onboarding.domain.repository.OnboardingRepository
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.ObservableSettings
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val dataModule = module {
-    single { Json { ignoreUnknownKeys = true } }
+    single { 
+        Json { 
+            ignoreUnknownKeys = true 
+            isLenient = true
+        } 
+    }
+    single { 
+        HttpClient {
+            install(ContentNegotiation) {
+                json(get())
+            }
+        }
+    }
     single { Settings() }
+    
+    // Auth
+    singleOf(::FirebaseAuthService)
+    singleOf(::AuthRepositoryImpl).bind<AuthenticationRepository>()
+
     singleOf(::GitHubApiService).bind<GithubRemoteDataSource>()
     singleOf(::GithubRepositoryImpl).bind<GithubRepository>()
     

@@ -2,6 +2,8 @@ package com.ucb.food.di
 
 import com.ucb.food.fakestore.domain.usecase.GetStoreProductsUseCase
 import com.ucb.food.github.domain.usecase.GetAvatarUseCase
+import com.ucb.food.login.domain.usecase.DoLoginUseCase
+import com.ucb.food.login.domain.usecase.DoSignUpUseCase
 import com.ucb.food.movie.domain.usecase.GetMoviesUseCase
 import com.ucb.food.onboarding.domain.usecase.CompleteOnboardingUseCase
 import com.ucb.food.onboarding.domain.usecase.GetOnboardingUseCase
@@ -10,6 +12,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val domainModule = module {
+    singleOf(::DoLoginUseCase)
+    singleOf(::DoSignUpUseCase)
     singleOf(::GetAvatarUseCase)
     singleOf(::GetMoviesUseCase)
 

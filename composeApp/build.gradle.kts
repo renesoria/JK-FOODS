@@ -42,9 +42,13 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.work.runtime.ktx)
 
+            implementation("io.sentry:sentry-android:7.13.0")
+            implementation("io.sentry:sentry-compose-android:7.13.0")
+
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.config)
             implementation(libs.firebase.database)
+            implementation("com.google.firebase:firebase-auth")
             implementation(libs.kotlinx.coroutines.play.services)
             
             // Necesario para ProcessLifecycleOwner
@@ -76,6 +80,8 @@ kotlin {
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
+
+            implementation(libs.firebase.auth.kmp)
 
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.no.arg)

@@ -1,6 +1,5 @@
 package com.ucb.food.onboarding.data.repository
 
-import com.ucb.food.firebase.getRemoteConfigString
 import com.ucb.food.onboarding.data.dto.OnboardingConfigDto
 import com.ucb.food.onboarding.data.mapper.toDomain
 import com.ucb.food.onboarding.domain.model.OnboardingItem
@@ -20,7 +19,7 @@ class OnboardingRepositoryImpl(
 
     override suspend fun getOnboardingConfig(languageCode: String): List<OnboardingItem> {
         return try {
-            val jsonString = getRemoteConfigString("onboarding_config")
+            val jsonString = com.ucb.food.firebase.getRemoteConfigStringSafe("onboarding_config")
             if (jsonString.isEmpty()) return emptyList()
             
             val dto = json.decodeFromString<OnboardingConfigDto>(jsonString)

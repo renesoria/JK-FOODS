@@ -24,11 +24,13 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SigninScreen(
     viewModel: SigninViewModel = koinViewModel(),
+    onNavigateToHome: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
     onNavigateBack: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -36,22 +38,26 @@ fun SigninScreen(
                 SigninEffect.NavigateBack -> onNavigateBack()
                 SigninEffect.NavigateToLogin -> onNavigateToLogin()
                 SigninEffect.SignUpSuccess -> {
-                    // Handle success
+                    onNavigateToHome()
                 }
                 is SigninEffect.ShowError -> {
-                    // Show error
+                    snackbarHostState.showSnackbar(effect.message)
                 }
             }
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.Start
-    ) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.Start
+        ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 16.dp)
@@ -262,4 +268,5 @@ fun SigninScreen(
         
         Spacer(modifier = Modifier.height(32.dp))
     }
+}
 }

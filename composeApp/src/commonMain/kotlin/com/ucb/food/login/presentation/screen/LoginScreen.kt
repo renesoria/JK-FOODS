@@ -27,6 +27,7 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -35,18 +36,22 @@ fun LoginScreen(
                 LoginEffect.NavigateToSignUp -> onNavigateToSignUp()
                 LoginEffect.LoginSuccess -> onLoginSuccess()
                 is LoginEffect.ShowError -> {
-                    // Show error
+                    snackbarHostState.showSnackbar(effect.message)
                 }
             }
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 16.dp)
@@ -88,7 +93,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = state.mobileNumber,
             onValueChange = { viewModel.onEvent(LoginEvent.OnMobileNumberChange(it)) },
-            placeholder = { Text("Mobile Number") },
+            placeholder = { Text("Email Address") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
@@ -145,4 +150,5 @@ fun LoginScreen(
             )
         }
     }
+}
 }

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.ucb.food.home.presentation.state.HomeEffect
 import com.ucb.food.home.presentation.state.HomeEvent
 import com.ucb.food.home.presentation.state.HomeState
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +30,20 @@ class HomeViewModel : ViewModel() {
             }
             HomeEvent.OnCartClick -> {
                 viewModelScope.launch { _effect.send(HomeEffect.NavigateToCart) }
+            }
+            HomeEvent.OnLogoutClick -> {
+                logout()
+            }
+        }
+    }
+
+    private fun logout() {
+        viewModelScope.launch {
+            try {
+                Firebase.auth.signOut()
+                _effect.send(HomeEffect.NavigateToLogin)
+            } catch (e: Exception) {
+                // Silently fail or log
             }
         }
     }

@@ -50,7 +50,13 @@ class FirebaseTestViewModel(
     }
 
     private fun loadRemoteConfig() {
-        remoteConfigText = getRemoteConfigString("texto_bienvenida")
+        viewModelScope.launch {
+            try {
+                remoteConfigText = getRemoteConfigString("texto_bienvenida")
+            } catch (e: Exception) {
+                remoteConfigText = "Error: ${e.message}"
+            }
+        }
     }
 
     private fun observeLocalDatabase() {

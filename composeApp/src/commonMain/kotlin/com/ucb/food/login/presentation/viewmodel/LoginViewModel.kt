@@ -2,6 +2,8 @@ package com.ucb.food.login.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ucb.food.login.domain.model.LoginModel
+import com.ucb.food.login.domain.usecase.DoLoginUseCase
 import com.ucb.food.login.presentation.state.LoginEffect
 import com.ucb.food.login.presentation.state.LoginEvent
 import com.ucb.food.login.presentation.state.LoginState
@@ -12,7 +14,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginModuleViewModel : ViewModel() {
+class LoginModuleViewModel(
+    private val doLoginUseCase: DoLoginUseCase
+) : ViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
 
@@ -28,14 +32,7 @@ class LoginModuleViewModel : ViewModel() {
                 _state.update { it.copy(password = event.password) }
             }
             LoginEvent.OnLoginClick -> {
-                // Simple login logic for now
-                _state.update { it.copy(isLoading = true) }
-                viewModelScope.launch {
-                    // simulate login
-                    kotlinx.coroutines.delay(1000)
-                    _state.update { it.copy(isLoading = false) }
-                    _effect.send(LoginEffect.LoginSuccess)
-                }
+                login()
             }
             LoginEvent.OnSignUpClick -> {
                 viewModelScope.launch {
@@ -46,6 +43,34 @@ class LoginModuleViewModel : ViewModel() {
                 viewModelScope.launch {
                     _effect.send(LoginEffect.NavigateBack)
                 }
+            }
+        }
+    }
+
+    private fun login() {
+        val email = _state.value.mobileNumber // The field is named mobileNumber in UI but email in domain
+        val password = _state.value.password
+
+        if (email.isBlank() || password.isBlank()) {
+            viewModelScope.launch {
+                _effect.send(LoginEffect.ShowError("Please fill in all fields"))
+            }
+            return
+        }
+
+        _state.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            try {
+                doLoginUseCase.invoke(LoginModel(email, password))
+                _state.update { it.copy(isLoading = false) }
+                _effect.send(LoginEffect.LoginSuccess)
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false) }
+                val errorMessage = when {
+                    e.message?.contains("invalid-credential") == true || e.message?.contains("user-not-found") == true -> "Correo o contraseña incorrectos"
+                    else -> e.message ?: "Error al iniciar sesión"
+                }
+                _effect.send(LoginEffect.ShowError(errorMessage))
             }
         }
     }

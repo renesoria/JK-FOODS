@@ -4,4 +4,5 @@ sealed interface HomeEffect {
     data object OpenMenu : HomeEffect
     data object NavigateToProfile : HomeEffect
     data object NavigateToCart : HomeEffect
+    data object NavigateToLogin : HomeEffect
 }

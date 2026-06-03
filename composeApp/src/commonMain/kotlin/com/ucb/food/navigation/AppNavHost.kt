@@ -31,8 +31,8 @@ fun AppNavHost(
         NavHost(navController = navController, startDestination = destination) {
             composable<NavRoute.Onboarding> {
                 OnboardingScreen(
-                    onNavigateToHome = {
-                        navController.navigate(NavRoute.Home) {
+                    onNavigateToLogin = {
+                        navController.navigate(NavRoute.Login) {
                             popUpTo(NavRoute.Onboarding) { inclusive = true }
                         }
                     }
@@ -74,11 +74,22 @@ fun AppNavHost(
             composable<NavRoute.SignUp> {
                 SigninScreen(
                     onNavigateBack = { navController.popBackStack() },
-                    onNavigateToLogin = { navController.navigate(NavRoute.Login) }
+                    onNavigateToLogin = { navController.navigate(NavRoute.Login) },
+                    onNavigateToHome = {
+                        navController.navigate(NavRoute.Home) {
+                            popUpTo(NavRoute.Login) { inclusive = true }
+                        }
+                    }
                 )
             }
             composable<NavRoute.Home> {
-                HomeScreen()
+                HomeScreen(
+                    onNavigateToLogin = {
+                        navController.navigate(NavRoute.Login) {
+                            popUpTo(NavRoute.Home) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
     }

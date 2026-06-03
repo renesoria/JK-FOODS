@@ -3,6 +3,8 @@ package com.ucb.food.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucb.food.onboarding.domain.usecase.IsOnboardingCompletedUseCase
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -15,13 +17,19 @@ class NavigationViewModel(
     val startDestination = _startDestination.asStateFlow()
 
     init {
-        checkOnboardingStatus()
+        checkAppStatus()
     }
 
-    private fun checkOnboardingStatus() {
+    private fun checkAppStatus() {
         viewModelScope.launch {
-            val isCompleted = isOnboardingCompletedUseCase()
-            _startDestination.value = if (isCompleted) NavRoute.Home else NavRoute.Onboarding
+            val isOnboardingCompleted = isOnboardingCompletedUseCase()
+            val isUserLoggedIn = Firebase.auth.currentUser != null
+
+            _startDestination.value = when {
+                !isOnboardingCompleted -> NavRoute.Onboarding
+                !isUserLoggedIn -> NavRoute.Login
+                else -> NavRoute.Home
+            }
         }
     }
 }

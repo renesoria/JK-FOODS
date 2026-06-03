@@ -1,3 +1,14 @@
 package com.ucb.food.firebase
 
-expect fun getRemoteConfigString(key: String): String
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+expect suspend fun getRemoteConfigString(key: String): String
+
+suspend fun getRemoteConfigStringSafe(key: String): String = withContext(Dispatchers.Default) {
+    try {
+        getRemoteConfigString(key)
+    } catch (e: Exception) {
+        ""
+    }
+}

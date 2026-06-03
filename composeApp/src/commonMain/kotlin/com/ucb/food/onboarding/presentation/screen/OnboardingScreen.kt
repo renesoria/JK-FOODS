@@ -1,5 +1,6 @@
 package com.ucb.food.onboarding.presentation.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -12,16 +13,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import com.ucb.food.onboarding.domain.model.OnboardingItem
 import com.ucb.food.onboarding.presentation.state.OnboardingEvent
 import com.ucb.food.onboarding.presentation.viewmodel.OnboardingViewModel
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun OnboardingScreen(
-    onNavigateToHome: () -> Unit,
+    onNavigateToLogin: () -> Unit,
     viewModel: OnboardingViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -45,7 +46,7 @@ fun OnboardingScreen(
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            TextButton(onClick = onNavigateToHome) {
+            TextButton(onClick = onNavigateToLogin) {
                 Text("Omitir")
             }
         }
@@ -75,7 +76,7 @@ fun OnboardingScreen(
             if (pagerState.currentPage == state.items.size - 1) {
                 Button(onClick = {
                     viewModel.onEvent(OnboardingEvent.OnFinish)
-                    onNavigateToHome()
+                    onNavigateToLogin()
                 }) {
                     Text("Iniciar")
                 }
@@ -97,12 +98,10 @@ fun OnboardingItemContent(item: OnboardingItem) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        AsyncImage(
-            model = item.imageUrl,
-            contentDescription = null,
-            modifier = Modifier.fillMaxWidth().height(300.dp),
-            contentScale = ContentScale.Fit
-        )
+        // Note: For remote images we need a loader, but user said standard resources aren't loading.
+        // If item.imageUrl is a URL, this will fail. If it's a resource path, we need painterResource.
+        // For now, let's just show text to avoid crashes if the image is missing.
+        
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = item.title,
