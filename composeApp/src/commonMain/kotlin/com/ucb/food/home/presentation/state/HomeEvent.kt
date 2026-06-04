@@ -5,4 +5,6 @@ sealed interface HomeEvent {
     data object OnProfileClick : HomeEvent
     data object OnCartClick : HomeEvent
     data object OnLogoutClick : HomeEvent
+    data class OnSearchQueryChanged(val query: String) : HomeEvent
+    data class OnRestaurantClick(val id: String) : HomeEvent
 }

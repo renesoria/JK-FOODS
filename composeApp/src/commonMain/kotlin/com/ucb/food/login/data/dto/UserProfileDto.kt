@@ -10,5 +10,6 @@ data class UserProfileDto(
     val email: String,
     val mobileNumber: String,
     val gender: String,
-    val address: String
+    val address: String,
+    val profilePicture: String? = null
 )

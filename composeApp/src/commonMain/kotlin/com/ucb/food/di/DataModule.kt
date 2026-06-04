@@ -18,6 +18,8 @@ import com.ucb.food.login.data.service.FirebaseAuthService
 import com.ucb.food.login.domain.repository.AuthenticationRepository
 import com.ucb.food.onboarding.data.repository.OnboardingRepositoryImpl
 import com.ucb.food.onboarding.domain.repository.OnboardingRepository
+import com.ucb.food.restaurant.data.repository.RestaurantRepositoryImpl
+import com.ucb.food.restaurant.domain.repository.RestaurantRepository
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.ObservableSettings
 import io.ktor.client.HttpClient
@@ -59,6 +61,9 @@ val dataModule = module {
     singleOf(::StoreRepositoryImpl).bind<StoreRepository>()
 
     singleOf(::OnboardingRepositoryImpl).bind<OnboardingRepository>()
+
+    // Restaurant
+    singleOf(::RestaurantRepositoryImpl).bind<RestaurantRepository>()
 
     single { FirebaseManager() }
 }

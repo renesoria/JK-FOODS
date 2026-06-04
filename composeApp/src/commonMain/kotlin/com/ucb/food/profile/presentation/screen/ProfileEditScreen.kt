@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -22,6 +23,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucb.food.core.composable.ProfileAvatar
+import com.ucb.food.core.utils.rememberImagePicker
 import com.ucb.food.profile.presentation.state.ProfileEditEvent
 import com.ucb.food.profile.presentation.viewmodel.ProfileEditEffect
 import com.ucb.food.profile.presentation.viewmodel.ProfileEditViewModel
@@ -35,6 +38,11 @@ fun ProfileEditScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+
+    // Selector de imágenes nativo
+    val imagePicker = rememberImagePicker { base64 ->
+        viewModel.onEvent(ProfileEditEvent.OnProfilePictureChanged(base64))
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -84,18 +92,19 @@ fun ProfileEditScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Avatar with camera icon
+            // Avatar con icono de lapicito
             Box(
                 modifier = Modifier
                     .size(100.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFE8F5E9)),
+                    .clickable { 
+                        imagePicker() // Abrir galería
+                    },
                 contentAlignment = Alignment.Center
             ) {
-                Canvas(modifier = Modifier.size(50.dp)) {
-                    drawCircle(color = Color(0xFF2196F3), radius = size.minDimension / 2)
-                    drawCircle(color = Color(0xFF2196F3), radius = size.minDimension / 4, center = Offset(size.width / 2, size.height * 0.4f))
-                }
+                ProfileAvatar(
+                    base64Image = state.profilePicture,
+                    size = 100.dp
+                )
                 
                 Box(
                     modifier = Modifier
@@ -105,12 +114,32 @@ fun ProfileEditScreen(
                         .background(Color(0xFF1B5E20)),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Camera icon placeholder
-                    Canvas(modifier = Modifier.size(16.dp)) {
+                    // Dibujo de un Lapicito (Pencil) con Canvas
+                    Canvas(modifier = Modifier.size(18.dp)) {
+                        val strokeWidth = 1.5.dp.toPx()
+                        
+                        // Cuerpo del lápiz
                         drawRect(
                             color = Color.White,
-                            topLeft = Offset(size.width * 0.25f, size.height * 0.25f),
-                            size = size / 2f
+                            topLeft = Offset(size.width * 0.3f, size.height * 0.1f),
+                            size = Size(size.width * 0.3f, size.height * 0.6f),
+                            style = Stroke(width = strokeWidth)
+                        )
+                        
+                        // Punta (triángulo)
+                        val path = Path().apply {
+                            moveTo(size.width * 0.3f, size.height * 0.7f)
+                            lineTo(size.width * 0.6f, size.height * 0.7f)
+                            lineTo(size.width * 0.45f, size.height * 0.95f)
+                            close()
+                        }
+                        drawPath(path, color = Color.White)
+                        
+                        // Goma (arriba)
+                        drawRect(
+                            color = Color.White,
+                            topLeft = Offset(size.width * 0.3f, size.height * 0.1f),
+                            size = Size(size.width * 0.3f, size.height * 0.15f)
                         )
                     }
                 }
@@ -129,7 +158,14 @@ fun ProfileEditScreen(
                     EditField(label = "Apellido", value = state.lastName, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnLastNameChanged(it)) })
                     EditField(label = "Correo Electrónico", value = state.email, onValueChange = {}, readOnly = true)
                     EditField(label = "Dirección", value = state.address, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnAddressChanged(it)) })
-                    EditField(label = "Contraseña", value = state.password, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnPasswordChanged(it)) }, isPassword = true)
+                    EditField(
+                        label = "Nueva Contraseña",
+                        value = state.password,
+                        onValueChange = { viewModel.onEvent(ProfileEditEvent.OnPasswordChanged(it)) },
+                        isPassword = true,
+                        isPasswordVisible = state.isPasswordVisible,
+                        onToggleVisibility = { viewModel.onEvent(ProfileEditEvent.OnTogglePasswordVisibility) }
+                    )
                 }
             }
 
@@ -156,7 +192,15 @@ fun ProfileEditScreen(
 }
 
 @Composable
-fun EditField(label: String, value: String, onValueChange: (String) -> Unit, readOnly: Boolean = false, isPassword: Boolean = false) {
+fun EditField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    readOnly: Boolean = false,
+    isPassword: Boolean = false,
+    isPasswordVisible: Boolean = false,
+    onToggleVisibility: () -> Unit = {}
+) {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
         Text(text = label, fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
         TextField(
@@ -164,7 +208,40 @@ fun EditField(label: String, value: String, onValueChange: (String) -> Unit, rea
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
             readOnly = readOnly,
-            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (isPassword && !isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None,
+            trailingIcon = if (isPassword) {
+                {
+                    IconButton(onClick = onToggleVisibility) {
+                        Box(modifier = Modifier.size(24.dp)) {
+                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                // Draw an "Eye" shape
+                                drawCircle(
+                                    color = if (isPasswordVisible) Color(0xFF1B5E20) else Color.Gray,
+                                    radius = size.minDimension / 4,
+                                    center = Offset(size.width / 2, size.height / 2)
+                                )
+                                drawPath(
+                                    path = Path().apply {
+                                        moveTo(0f, size.height / 2)
+                                        quadraticTo(size.width / 2, 0f, size.width, size.height / 2)
+                                        quadraticTo(size.width / 2, size.height, 0f, size.height / 2)
+                                    },
+                                    color = if (isPasswordVisible) Color(0xFF1B5E20) else Color.Gray,
+                                    style = Stroke(width = 2f)
+                                )
+                                if (!isPasswordVisible) {
+                                    drawLine(
+                                        color = Color.Gray,
+                                        start = Offset(0f, 0f),
+                                        end = Offset(size.width, size.height),
+                                        strokeWidth = 2f
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            } else null,
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,

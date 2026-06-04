@@ -11,6 +11,8 @@ import com.ucb.food.onboarding.domain.usecase.IsOnboardingCompletedUseCase
 import com.ucb.food.profile.domain.usecase.GetUserProfileUseCase
 import com.ucb.food.profile.domain.usecase.SyncProfileUseCase
 import com.ucb.food.profile.domain.usecase.UpdateUserProfileUseCase
+import com.ucb.food.restaurant.domain.usecase.AddReviewUseCase
+import com.ucb.food.restaurant.domain.usecase.GetRestaurantsUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -29,4 +31,8 @@ val domainModule = module {
     singleOf(::GetUserProfileUseCase)
     singleOf(::UpdateUserProfileUseCase)
     singleOf(::SyncProfileUseCase)
+
+    // Restaurant
+    singleOf(::GetRestaurantsUseCase)
+    singleOf(::AddReviewUseCase)
 }

@@ -90,6 +90,9 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(project(":designsystem"))
+            
+            implementation(libs.peekaboo.ui)
+            implementation(libs.peekaboo.image.picker)
         }
 
         iosMain.dependencies {

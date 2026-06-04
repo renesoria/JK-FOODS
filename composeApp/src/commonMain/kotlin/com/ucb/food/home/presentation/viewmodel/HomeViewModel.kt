@@ -5,36 +5,64 @@ import androidx.lifecycle.viewModelScope
 import com.ucb.food.home.presentation.state.HomeEffect
 import com.ucb.food.home.presentation.state.HomeEvent
 import com.ucb.food.home.presentation.state.HomeState
+import com.ucb.food.restaurant.domain.usecase.GetRestaurantsUseCase
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val getRestaurantsUseCase: GetRestaurantsUseCase
+) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<HomeEffect>()
     val effect = _effect.receiveAsFlow()
 
-    fun onEvent(event: HomeEvent) {
-        when (event) {
-            HomeEvent.OnMenuClick -> {
-                viewModelScope.launch { _effect.send(HomeEffect.OpenMenu) }
-            }
-            HomeEvent.OnProfileClick -> {
-                viewModelScope.launch { _effect.send(HomeEffect.NavigateToProfile) }
-            }
-            HomeEvent.OnCartClick -> {
-                viewModelScope.launch { _effect.send(HomeEffect.NavigateToCart) }
-            }
-            HomeEvent.OnLogoutClick -> {
-                logout()
+    init {
+        loadRestaurants()
+    }
+
+    private fun loadRestaurants() {
+        _state.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            getRestaurantsUseCase().collect { list ->
+                _state.update { 
+                    it.copy(
+                        isLoading = false,
+                        restaurants = list,
+                        filteredRestaurants = filterList(list, it.searchQuery)
+                    ) 
+                }
             }
         }
+    }
+
+    fun onEvent(event: HomeEvent) {
+        when (event) {
+            HomeEvent.OnMenuClick -> viewModelScope.launch { _effect.send(HomeEffect.OpenMenu) }
+            HomeEvent.OnProfileClick -> viewModelScope.launch { _effect.send(HomeEffect.NavigateToProfile) }
+            HomeEvent.OnCartClick -> viewModelScope.launch { _effect.send(HomeEffect.NavigateToCart) }
+            HomeEvent.OnLogoutClick -> logout()
+            is HomeEvent.OnSearchQueryChanged -> {
+                _state.update { 
+                    it.copy(
+                        searchQuery = event.query,
+                        filteredRestaurants = filterList(it.restaurants, event.query)
+                    )
+                }
+            }
+            is HomeEvent.OnRestaurantClick -> {
+                viewModelScope.launch { _effect.send(HomeEffect.NavigateToRestaurantDetail(event.id)) }
+            }
+        }
+    }
+
+    private fun filterList(list: List<com.ucb.food.restaurant.domain.model.RestaurantModel>, query: String): List<com.ucb.food.restaurant.domain.model.RestaurantModel> {
+        if (query.isBlank()) return list
+        return list.filter { it.name.contains(query, ignoreCase = true) }
     }
 
     private fun logout() {
@@ -43,7 +71,7 @@ class HomeViewModel : ViewModel() {
                 Firebase.auth.signOut()
                 _effect.send(HomeEffect.NavigateToLogin)
             } catch (e: Exception) {
-                // Silently fail or log
+                // handle error
             }
         }
     }

@@ -39,4 +39,8 @@ class FirebaseAuthService {
     }
 
     fun getCurrentUser() = auth.currentUser
+
+    suspend fun updatePassword(newPassword: String) {
+        auth.currentUser?.updatePassword(newPassword)
+    }
 }

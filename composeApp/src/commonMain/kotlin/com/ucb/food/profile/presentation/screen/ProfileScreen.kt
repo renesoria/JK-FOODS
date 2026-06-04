@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ucb.food.core.composable.ProfileAvatar
 import com.ucb.food.profile.presentation.state.ProfileEffect
 import com.ucb.food.profile.presentation.state.ProfileEvent
 import com.ucb.food.profile.presentation.viewmodel.ProfileViewModel
@@ -64,6 +65,7 @@ fun ProfileScreen(
             UserHeaderCard(
                 name = "${state.user?.firstName ?: ""} ${state.user?.lastName ?: ""}",
                 email = state.user?.email ?: "",
+                profilePicture = state.user?.profilePicture,
                 onEditClick = { viewModel.onEvent(ProfileEvent.OnEditProfileClick) }
             )
 
@@ -235,7 +237,7 @@ fun ProfileTopBar(onBackClick: () -> Unit) {
 }
 
 @Composable
-fun UserHeaderCard(name: String, email: String, onEditClick: () -> Unit) {
+fun UserHeaderCard(name: String, email: String, profilePicture: String?, onEditClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -246,17 +248,12 @@ fun UserHeaderCard(name: String, email: String, onEditClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFE8F5E9)),
                 contentAlignment = Alignment.Center
             ) {
-                // Profile Avatar Placeholder
-                Canvas(modifier = Modifier.size(40.dp)) {
-                    drawCircle(color = Color(0xFF2196F3), radius = size.minDimension / 2)
-                    drawCircle(color = Color(0xFF2196F3), radius = size.minDimension / 4, center = Offset(size.width / 2, size.height * 0.4f))
-                }
+                ProfileAvatar(
+                    base64Image = profilePicture,
+                    size = 80.dp
+                )
                 
                 // Edit icon on avatar
                 Box(

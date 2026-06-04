@@ -11,7 +11,8 @@ fun UserProfileModel.toDto() = UserProfileDto(
     email = email,
     mobileNumber = mobileNumber,
     gender = gender,
-    address = address
+    address = address,
+    profilePicture = profilePicture
 )
 
 fun UserProfileDto.toModel() = UserProfileModel(
@@ -21,7 +22,8 @@ fun UserProfileDto.toModel() = UserProfileModel(
     email = email,
     mobileNumber = mobileNumber,
     gender = gender,
-    address = address
+    address = address,
+    profilePicture = profilePicture
 )
 
 fun UserProfileDto.toEntity() = UserEntity(
@@ -31,5 +33,6 @@ fun UserProfileDto.toEntity() = UserEntity(
     email = email,
     mobileNumber = mobileNumber,
     gender = gender,
-    address = address
+    address = address,
+    profilePicture = profilePicture
 )

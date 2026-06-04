@@ -5,4 +5,5 @@ sealed interface HomeEffect {
     data object NavigateToProfile : HomeEffect
     data object NavigateToCart : HomeEffect
     data object NavigateToLogin : HomeEffect
+    data class NavigateToRestaurantDetail(val id: String) : HomeEffect
 }

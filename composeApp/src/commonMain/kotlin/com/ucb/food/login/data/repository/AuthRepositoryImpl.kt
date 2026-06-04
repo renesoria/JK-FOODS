@@ -41,7 +41,8 @@ class AuthRepositoryImpl(
             email = profile.email,
             mobileNumber = profile.mobileNumber,
             gender = profile.gender,
-            address = profile.address
+            address = profile.address,
+            profilePicture = profile.profilePicture
         ))
     }
 
@@ -60,8 +61,13 @@ class AuthRepositoryImpl(
             email = profile.email,
             mobileNumber = profile.mobileNumber,
             gender = profile.gender,
-            address = profile.address
+            address = profile.address,
+            profilePicture = profile.profilePicture
         ))
+    }
+
+    override suspend fun updatePassword(newPassword: String) {
+        firebaseAuthService.updatePassword(newPassword)
     }
 
     override fun getUserProfile(): Flow<UserProfileModel?> {
@@ -74,7 +80,8 @@ class AuthRepositoryImpl(
                     email = it.email,
                     mobileNumber = it.mobileNumber,
                     gender = it.gender,
-                    address = it.address
+                    address = it.address,
+                    profilePicture = it.profilePicture
                 )
             }
         }
