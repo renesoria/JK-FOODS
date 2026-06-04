@@ -52,103 +52,106 @@ fun LoginScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            // Back Arrow manual
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable { viewModel.onEvent(LoginEvent.OnBackClick) }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp)
             ) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val path = Path().apply {
-                        moveTo(size.width * 0.8f, size.height * 0.5f)
-                        lineTo(size.width * 0.2f, size.height * 0.5f)
-                        moveTo(size.width * 0.4f, size.height * 0.3f)
-                        lineTo(size.width * 0.2f, size.height * 0.5f)
-                        lineTo(size.width * 0.4f, size.height * 0.7f)
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { viewModel.onEvent(LoginEvent.OnBackClick) }
+                ) {
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val path = Path().apply {
+                            moveTo(size.width * 0.8f, size.height * 0.5f)
+                            lineTo(size.width * 0.2f, size.height * 0.5f)
+                            moveTo(size.width * 0.4f, size.height * 0.3f)
+                            lineTo(size.width * 0.2f, size.height * 0.5f)
+                            lineTo(size.width * 0.4f, size.height * 0.7f)
+                        }
+                        drawPath(
+                            path = path,
+                            color = Color(0xFFA67C00),
+                            style = Stroke(width = 2.dp.toPx())
+                        )
                     }
-                    drawPath(
-                        path = path,
-                        color = Color(0xFFA67C00),
-                        style = Stroke(width = 2.dp.toPx())
-                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = "Log In",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFA67C00)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(64.dp))
+
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = { viewModel.onEvent(LoginEvent.OnEmailChange(it)) },
+                placeholder = { Text("Email Address") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                isError = state.emailError != null,
+                supportingText = { state.emailError?.let { Text(it) } },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA67C00),
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = { viewModel.onEvent(LoginEvent.OnPasswordChange(it)) },
+                placeholder = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                isError = state.passwordError != null,
+                supportingText = { state.passwordError?.let { Text(it) } },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA67C00),
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = { viewModel.onEvent(LoginEvent.OnLoginClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF7C5D00)
+                )
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text("Log In", color = Color.White, fontSize = 18.sp)
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "Log In",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFA67C00)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(64.dp))
-
-        OutlinedTextField(
-            value = state.mobileNumber,
-            onValueChange = { viewModel.onEvent(LoginEvent.OnMobileNumberChange(it)) },
-            placeholder = { Text("Email Address") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFA67C00),
-                unfocusedBorderColor = Color.LightGray
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = state.password,
-            onValueChange = { viewModel.onEvent(LoginEvent.OnPasswordChange(it)) },
-            placeholder = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFA67C00),
-                unfocusedBorderColor = Color.LightGray
-            )
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = { viewModel.onEvent(LoginEvent.OnLoginClick) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF7C5D00)
-            )
-        ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-            } else {
-                Text("Log In", color = Color.White, fontSize = 18.sp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = "Don't Have User ID? ", color = Color.Gray)
+                Text(
+                    text = "SignUp Now",
+                    color = Color.Red,
+                    modifier = Modifier.clickable { viewModel.onEvent(LoginEvent.OnSignUpClick) },
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(text = "Don't Have User ID? ", color = Color.Gray)
-            Text(
-                text = "SignUp Now",
-                color = Color.Red,
-                modifier = Modifier.clickable { viewModel.onEvent(LoginEvent.OnSignUpClick) },
-                fontWeight = FontWeight.Bold
-            )
-        }
     }
-}
 }

@@ -13,6 +13,8 @@ import com.ucb.food.github.presentation.screen.GithubScreen
 import com.ucb.food.movie.presentation.screen.MovieScreen
 import com.ucb.food.firebase.FirebaseTestScreen
 import com.ucb.food.login.presentation.screen.LoginScreen
+import com.ucb.food.profile.presentation.screen.ProfileEditScreen
+import com.ucb.food.profile.presentation.screen.ProfileScreen
 import com.ucb.food.signin.presentation.screen.SigninScreen
 import com.ucb.food.home.presentation.screen.HomeScreen
 import com.ucb.food.onboarding.presentation.screen.OnboardingScreen
@@ -40,11 +42,21 @@ fun AppNavHost(
             }
             
             composable<NavRoute.Profile> {
-
+                ProfileScreen(
+                    onNavigateToEditProfile = { navController.navigate(NavRoute.ProfileEdit) },
+                    onNavigateToLogin = {
+                        navController.navigate(NavRoute.Login) {
+                            popUpTo(NavRoute.Home) { inclusive = true }
+                        }
+                    },
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
 
             composable<NavRoute.ProfileEdit> {
-
+                ProfileEditScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
             composable<NavRoute.Github> {
                 GithubScreen()
@@ -84,6 +96,7 @@ fun AppNavHost(
             }
             composable<NavRoute.Home> {
                 HomeScreen(
+                    onNavigateToProfile = { navController.navigate(NavRoute.Profile) },
                     onNavigateToLogin = {
                         navController.navigate(NavRoute.Login) {
                             popUpTo(NavRoute.Home) { inclusive = true }

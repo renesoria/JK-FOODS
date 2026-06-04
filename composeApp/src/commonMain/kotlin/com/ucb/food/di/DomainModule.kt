@@ -8,6 +8,9 @@ import com.ucb.food.movie.domain.usecase.GetMoviesUseCase
 import com.ucb.food.onboarding.domain.usecase.CompleteOnboardingUseCase
 import com.ucb.food.onboarding.domain.usecase.GetOnboardingUseCase
 import com.ucb.food.onboarding.domain.usecase.IsOnboardingCompletedUseCase
+import com.ucb.food.profile.domain.usecase.GetUserProfileUseCase
+import com.ucb.food.profile.domain.usecase.SyncProfileUseCase
+import com.ucb.food.profile.domain.usecase.UpdateUserProfileUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -22,4 +25,8 @@ val domainModule = module {
     singleOf(::GetOnboardingUseCase)
     singleOf(::CompleteOnboardingUseCase)
     singleOf(::IsOnboardingCompletedUseCase)
+
+    singleOf(::GetUserProfileUseCase)
+    singleOf(::UpdateUserProfileUseCase)
+    singleOf(::SyncProfileUseCase)
 }

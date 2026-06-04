@@ -194,14 +194,9 @@ fun HomeTopBar(viewModel: HomeViewModel) {
             color = Color(0xFFA67C00)
         )
 
-        Row {
-            // Logout Button (Temporary for testing)
-            TextButton(onClick = { 
-                viewModel.onEvent(HomeEvent.OnLogoutClick)
-            }) {
-                Text("Logout", color = Color.Red)
-            }
-
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Box(
                 modifier = Modifier
                     .size(32.dp)
@@ -215,30 +210,6 @@ fun HomeTopBar(viewModel: HomeViewModel) {
                         quadraticBezierTo(size.width / 2, size.height * 0.6f, size.width * 0.75f, size.height * 0.85f)
                     }
                     drawPath(path, color = Color(0xFFA67C00), style = Stroke(width = 2.dp.toPx()))
-                }
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clickable { viewModel.onEvent(HomeEvent.OnCartClick) }
-            ) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val path = Path().apply {
-                        moveTo(size.width * 0.2f, size.height * 0.3f)
-                        lineTo(size.width * 0.8f, size.height * 0.3f)
-                        lineTo(size.width * 0.7f, size.height * 0.9f)
-                        lineTo(size.width * 0.3f, size.height * 0.9f)
-                        close()
-                        
-                        moveTo(size.width * 0.3f, size.height * 0.3f)
-                        quadraticBezierTo(size.width / 2, 0f, size.width * 0.7f, size.height * 0.3f)
-                    }
-                    drawPath(path, color = Color(0xFFA67C00), style = Stroke(width = 2.dp.toPx()))
-                    drawLine(Color(0xFFA67C00), start = Offset(size.width * 0.45f, size.height * 0.4f), end = Offset(size.width * 0.45f, size.height * 0.8f), strokeWidth = 1.dp.toPx())
-                    drawLine(Color(0xFFA67C00), start = Offset(size.width * 0.55f, size.height * 0.4f), end = Offset(size.width * 0.55f, size.height * 0.8f), strokeWidth = 1.dp.toPx())
                 }
             }
         }

@@ -25,11 +25,11 @@ class LoginModuleViewModel(
 
     fun onEvent(event: LoginEvent) {
         when (event) {
-            is LoginEvent.OnMobileNumberChange -> {
-                _state.update { it.copy(mobileNumber = event.mobileNumber) }
+            is LoginEvent.OnEmailChange -> {
+                _state.update { it.copy(email = event.email, emailError = null) }
             }
             is LoginEvent.OnPasswordChange -> {
-                _state.update { it.copy(password = event.password) }
+                _state.update { it.copy(password = event.password, passwordError = null) }
             }
             LoginEvent.OnLoginClick -> {
                 login()
@@ -48,15 +48,24 @@ class LoginModuleViewModel(
     }
 
     private fun login() {
-        val email = _state.value.mobileNumber // The field is named mobileNumber in UI but email in domain
+        val email = _state.value.email
         val password = _state.value.password
 
-        if (email.isBlank() || password.isBlank()) {
-            viewModelScope.launch {
-                _effect.send(LoginEffect.ShowError("Please fill in all fields"))
-            }
-            return
+        var hasError = false
+        if (email.isBlank()) {
+            _state.update { it.copy(emailError = "El correo es obligatorio") }
+            hasError = true
+        } else if (!email.contains("@")) {
+            _state.update { it.copy(emailError = "Formato de correo inválido") }
+            hasError = true
         }
+
+        if (password.isBlank()) {
+            _state.update { it.copy(passwordError = "La contraseña es obligatoria") }
+            hasError = true
+        }
+
+        if (hasError) return
 
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
@@ -68,7 +77,7 @@ class LoginModuleViewModel(
                 _state.update { it.copy(isLoading = false) }
                 val errorMessage = when {
                     e.message?.contains("invalid-credential") == true || e.message?.contains("user-not-found") == true -> "Correo o contraseña incorrectos"
-                    else -> e.message ?: "Error al iniciar sesión"
+                    else -> "Error al iniciar sesión"
                 }
                 _effect.send(LoginEffect.ShowError(errorMessage))
             }

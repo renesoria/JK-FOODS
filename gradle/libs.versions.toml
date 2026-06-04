@@ -81,6 +81,7 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database" 
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 firebase-auth-kmp = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseMultiplatform" }
+firebase-database-kmp = { module = "dev.gitlive:firebase-database", version.ref = "firebaseMultiplatform" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version = "1.10.1" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 firebase-auth-gitlive = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseMultiplatform" }
