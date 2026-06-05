@@ -123,7 +123,7 @@ fun RestaurantDetailScreen(
                             Spacer(modifier = Modifier.width(16.dp))
                             
                             Text(
-                                text = state.restaurant?.name?.substringBefore(" ") ?: "Restaurant",
+                                text = state.restaurant?.name ?: "Restaurant",
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF8B6B11)
