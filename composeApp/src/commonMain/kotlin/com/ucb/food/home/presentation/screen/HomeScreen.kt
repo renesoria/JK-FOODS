@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -39,7 +41,9 @@ fun HomeScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToCart: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
-    onNavigateToRestaurantDetail: (String) -> Unit = {}
+    onNavigateToRestaurantDetail: (String) -> Unit = {},
+    onNavigateToExplore: () -> Unit = {},
+    onOpenDrawer: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -50,7 +54,7 @@ fun HomeScreen(
                 HomeEffect.NavigateToCart -> onNavigateToCart()
                 HomeEffect.NavigateToLogin -> onNavigateToLogin()
                 is HomeEffect.NavigateToRestaurantDetail -> onNavigateToRestaurantDetail(effect.id)
-                HomeEffect.OpenMenu -> { /* Open drawer or menu */ }
+                HomeEffect.OpenMenu -> onOpenDrawer()
             }
         }
     }
@@ -62,140 +66,241 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color.White),
-            contentPadding = PaddingValues(16.dp)
+                .background(Color(0xFFFAFAFA)),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            // Buscador (Lupita)
+            // Buscador (Lupita) con sugerencias desplegables
             item {
-                OutlinedTextField(
-                    value = state.searchQuery,
-                    onValueChange = { viewModel.onEvent(HomeEvent.OnSearchQueryChanged(it)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    placeholder = { Text("Buscar restaurante...") },
-                    leadingIcon = {
-                        Box(modifier = Modifier.size(24.dp)) {
-                            Canvas(modifier = Modifier.fillMaxSize()) {
-                                drawCircle(
-                                    color = Color(0xFFA67C00),
-                                    radius = size.minDimension / 3,
-                                    center = Offset(size.width * 0.4f, size.height * 0.4f),
-                                    style = Stroke(width = 2.dp.toPx())
-                                )
-                                drawLine(
-                                    color = Color(0xFFA67C00),
-                                    start = Offset(size.width * 0.6f, size.height * 0.6f),
-                                    end = Offset(size.width * 0.9f, size.height * 0.9f),
-                                    strokeWidth = 2.dp.toPx()
-                                )
+                Column(modifier = Modifier.padding(horizontal = 16.dp).zIndex(1f)) {
+                    var isExpanded by remember { mutableStateOf(false) }
+                    
+                    OutlinedTextField(
+                        value = state.searchQuery,
+                        onValueChange = { 
+                            viewModel.onEvent(HomeEvent.OnSearchQueryChanged(it))
+                            isExpanded = it.isNotBlank()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        placeholder = { Text("Buscar restaurante o comida...") },
+                        leadingIcon = {
+                            Box(modifier = Modifier.size(24.dp)) {
+                                Canvas(modifier = Modifier.fillMaxSize()) {
+                                    drawCircle(
+                                        color = Color(0xFFA67C00),
+                                        radius = size.minDimension / 3,
+                                        center = Offset(size.width * 0.4f, size.height * 0.4f),
+                                        style = Stroke(width = 2.dp.toPx())
+                                    )
+                                    drawLine(
+                                        color = Color(0xFFA67C00),
+                                        start = Offset(size.width * 0.6f, size.height * 0.6f),
+                                        end = Offset(size.width * 0.9f, size.height * 0.9f),
+                                        strokeWidth = 2.dp.toPx()
+                                    )
+                                }
+                            }
+                        },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFFA67C00),
+                            unfocusedBorderColor = Color.LightGray
+                        ),
+                        singleLine = true
+                    )
+
+                    // Lista desplegable de resultados (Profesional)
+                    if (isExpanded && state.filteredRestaurants.isNotEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 250.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            elevation = CardDefaults.cardElevation(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            LazyColumn {
+                                items(state.filteredRestaurants) { restaurant ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { 
+                                                isExpanded = false
+                                                viewModel.onEvent(HomeEvent.OnRestaurantClick(restaurant.id))
+                                            }
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        AsyncImage(
+                                            model = restaurant.logoUrl,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(32.dp).clip(CircleShape),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Text(text = restaurant.name, fontWeight = FontWeight.SemiBold)
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        Text(text = "★ ${restaurant.overallRating}", fontSize = 12.sp, color = Color(0xFFA67C00))
+                                    }
+                                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.5f))
+                                }
                             }
                         }
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFFA67C00),
-                        unfocusedBorderColor = Color.LightGray
-                    ),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
             }
 
-            // Main Banner
+            // SECCIÓN 1: Hot Deals (Banner dinámico)
             item {
-                Image(
-                    painter = painterResource(Res.drawable.fotoComida1),
-                    contentDescription = "Main Food",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(180.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
+                Text(
+                    text = "Hot Deals 🔥",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
+                
+                if (state.hotDeals.isEmpty()) {
+                    Image(
+                        painter = painterResource(Res.drawable.paraHotDeals),
+                        contentDescription = "Hot Deals",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .padding(horizontal = 16.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(state.hotDeals) { deal ->
+                            AsyncImage(
+                                model = deal.imageUrl,
+                                contentDescription = deal.title,
+                                modifier = Modifier
+                                    .width(300.dp)
+                                    .height(160.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { viewModel.onEvent(HomeEvent.OnRestaurantClick(deal.restaurantId)) },
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
+            // SECCIÓN 2: Explore Restaurants (Carrusel Horizontal)
             item {
-                Text(
-                    text = "Explore Restaurants",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFA67C00)
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            // Dynamic Restaurants Grid/List
-            if (state.isLoading) {
-                item {
-                    Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Explorar Lugares",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "Ver todo",
+                        fontSize = 14.sp,
+                        color = Color(0xFFA67C00),
+                        modifier = Modifier.clickable { onNavigateToExplore() }
+                    )
+                }
+                
+                if (state.isLoading) {
+                    Box(modifier = Modifier.fillMaxWidth().height(150.dp), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = Color(0xFFA67C00))
                     }
-                }
-            } else if (state.filteredRestaurants.isEmpty()) {
-                item {
-                    Text("No se encontraron restaurantes", color = Color.Gray, modifier = Modifier.padding(16.dp))
-                }
-            } else {
-                // We use a custom grid layout here since LazyColumn cannot host LazyVerticalGrid easily
-                // For simplicity, we'll show them in rows of 2
-                val chunks = state.filteredRestaurants.chunked(2)
-                items(chunks) { rowItems ->
-                    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-                        rowItems.forEach { restaurant ->
-                            RestaurantCard(
+                } else {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(state.restaurants) { restaurant -> // Usamos la lista completa original
+                            RestaurantHorizontalCard(
                                 restaurant = restaurant,
-                                modifier = Modifier.weight(1f),
                                 onClick = { viewModel.onEvent(HomeEvent.OnRestaurantClick(restaurant.id)) }
                             )
-                            if (rowItems.size == 1) Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }
             }
 
+            // SECCIÓN 3: Top Ranking (Los más votados)
             item {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Hot Deals",
+                    text = "Top Ranking Cochala 🏆",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFA67C00)
+                    color = Color.Black,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Los favoritos de la comunidad",
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(state.topRatedRestaurants) { restaurant ->
+                        RestaurantRankingCard(
+                            restaurant = restaurant,
+                            onClick = { viewModel.onEvent(HomeEvent.OnRestaurantClick(restaurant.id)) }
+                        )
+                    }
+                }
+            }
+
+            // Banner Inferior decorativo
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
                 Image(
-                    painter = painterResource(Res.drawable.paraHotDeals),
-                    contentDescription = "Hot Deals",
+                    painter = painterResource(Res.drawable.fotoComida1),
+                    contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp)
-                        .clip(RoundedCornerShape(12.dp)),
+                        .padding(horizontal = 16.dp)
+                        .clip(RoundedCornerShape(16.dp)),
                     contentScale = ContentScale.Crop
                 )
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
 }
 
 @Composable
-fun RestaurantCard(restaurant: RestaurantModel, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun RestaurantHorizontalCard(restaurant: RestaurantModel, onClick: () -> Unit) {
     Card(
-        modifier = modifier
-            .padding(horizontal = 4.dp)
+        modifier = Modifier
+            .width(160.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             AsyncImage(
                 model = restaurant.logoUrl,
                 contentDescription = restaurant.name,
                 modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape),
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -203,12 +308,52 @@ fun RestaurantCard(restaurant: RestaurantModel, modifier: Modifier = Modifier, o
                 text = restaurant.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = Color.Black,
-                maxLines = 1
+                maxLines = 1,
+                color = Color.Black
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "★", color = Color(0xFFA67C00), fontSize = 12.sp)
                 Text(text = " ${restaurant.overallRating}", fontSize = 12.sp, color = Color.Gray)
+            }
+        }
+    }
+}
+
+@Composable
+fun RestaurantRankingCard(restaurant: RestaurantModel, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .width(280.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = restaurant.logoUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = restaurant.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = "Puntuación: ${restaurant.overallRating} ★",
+                    color = Color(0xFF2E7D32),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }

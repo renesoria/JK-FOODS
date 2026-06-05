@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ucb.food.home.presentation.state.HomeEffect
 import com.ucb.food.home.presentation.state.HomeEvent
 import com.ucb.food.home.presentation.state.HomeState
+import com.ucb.food.restaurant.domain.usecase.GetHotDealsUseCase
 import com.ucb.food.restaurant.domain.usecase.GetRestaurantsUseCase
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val getRestaurantsUseCase: GetRestaurantsUseCase
+    private val getRestaurantsUseCase: GetRestaurantsUseCase,
+    private val getHotDealsUseCase: GetHotDealsUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
@@ -22,21 +24,26 @@ class HomeViewModel(
     val effect = _effect.receiveAsFlow()
 
     init {
-        loadRestaurants()
+        loadData()
     }
 
-    private fun loadRestaurants() {
+    private fun loadData() {
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            getRestaurantsUseCase().collect { list ->
+            combine(
+                getRestaurantsUseCase(),
+                getHotDealsUseCase()
+            ) { list, deals ->
                 _state.update { 
                     it.copy(
                         isLoading = false,
                         restaurants = list,
-                        filteredRestaurants = filterList(list, it.searchQuery)
+                        filteredRestaurants = filterList(list, it.searchQuery), // Solo para el buscador
+                        topRatedRestaurants = list.sortedByDescending { r -> r.overallRating }.take(5),
+                        hotDeals = deals
                     ) 
                 }
-            }
+            }.collect()
         }
     }
 

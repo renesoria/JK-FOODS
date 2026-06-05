@@ -6,6 +6,7 @@ data class ReviewModel(
     val userName: String = "",
     val userProfilePicture: String? = null,
     val restaurantId: String = "",
+    val restaurantName: String = "", // Nuevo campo
     val branchId: String = "",
     val rating: Int = 0,
     val comment: String = "",

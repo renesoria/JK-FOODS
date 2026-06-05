@@ -2,16 +2,25 @@ package com.ucb.food.restaurant.data.mapper
 
 import com.ucb.food.restaurant.data.dto.BranchDto
 import com.ucb.food.restaurant.data.dto.DishDto
+import com.ucb.food.restaurant.data.dto.HotDealDto
 import com.ucb.food.restaurant.data.dto.RestaurantDto
 import com.ucb.food.restaurant.data.dto.ReviewDto
 import com.ucb.food.restaurant.data.repository.DishEntity
 import com.ucb.food.restaurant.data.repository.RestaurantEntity
 import com.ucb.food.restaurant.domain.model.BranchModel
 import com.ucb.food.restaurant.domain.model.DishModel
+import com.ucb.food.restaurant.domain.model.HotDealModel
 import com.ucb.food.restaurant.domain.model.RestaurantModel
 import com.ucb.food.restaurant.domain.model.ReviewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+
+fun HotDealDto.toModel() = HotDealModel(
+    id = id,
+    imageUrl = imageUrl,
+    restaurantId = restaurantId,
+    title = title
+)
 
 fun RestaurantDto.toModel() = RestaurantModel(
     id = id,
@@ -85,6 +94,7 @@ fun ReviewDto.toModel() = ReviewModel(
     userName = userName,
     userProfilePicture = userProfilePicture,
     restaurantId = restaurantId,
+    restaurantName = restaurantName,
     branchId = branchId,
     rating = rating,
     comment = comment,
@@ -111,6 +121,7 @@ fun ReviewModel.toDto() = ReviewDto(
     userName = userName,
     userProfilePicture = userProfilePicture,
     restaurantId = restaurantId,
+    restaurantName = restaurantName,
     branchId = branchId,
     rating = rating,
     comment = comment,

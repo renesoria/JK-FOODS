@@ -52,4 +52,7 @@ sealed class NavRoute {
     
     @Serializable
     object MyReviews: NavRoute()
+
+    @Serializable
+    object Explore: NavRoute()
 }

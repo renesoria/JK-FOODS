@@ -205,6 +205,9 @@ fun ReviewListItem(review: ReviewModel) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(text = review.userName, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    if (review.restaurantName.isNotBlank()) {
+                        Text(text = "en ${review.restaurantName}", fontSize = 12.sp, color = Color.Gray)
+                    }
                     Row {
                         (1..5).forEach { index ->
                             Text(

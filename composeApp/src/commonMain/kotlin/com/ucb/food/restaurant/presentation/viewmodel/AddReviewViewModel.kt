@@ -102,6 +102,7 @@ class AddReviewViewModel(
                     userName = "${user?.firstName} ${user?.lastName}",
                     userProfilePicture = user?.profilePicture,
                     restaurantId = s.restaurant?.id ?: "",
+                    restaurantName = s.restaurant?.name ?: "", // Enviamos el nombre
                     branchId = branchId,
                     rating = s.rating,
                     comment = s.comment,
