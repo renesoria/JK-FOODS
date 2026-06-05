@@ -63,7 +63,7 @@ val dataModule = module {
     singleOf(::OnboardingRepositoryImpl).bind<OnboardingRepository>()
 
     // Restaurant
-    singleOf(::RestaurantRepositoryImpl).bind<RestaurantRepository>()
+    single { RestaurantRepositoryImpl(get()) }.bind<RestaurantRepository>()
 
     single { FirebaseManager() }
 }

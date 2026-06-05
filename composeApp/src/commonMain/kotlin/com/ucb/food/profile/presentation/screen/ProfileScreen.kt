@@ -30,6 +30,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
     onNavigateToEditProfile: () -> Unit = {},
+    onNavigateToMyReviews: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
     onNavigateBack: () -> Unit = {}
 ) {
@@ -41,6 +42,7 @@ fun ProfileScreen(
             when (effect) {
                 ProfileEffect.NavigateBack -> onNavigateBack()
                 ProfileEffect.NavigateToEditProfile -> onNavigateToEditProfile()
+                ProfileEffect.NavigateToMyReviews -> onNavigateToMyReviews()
                 ProfileEffect.NavigateToLogin -> onNavigateToLogin()
                 is ProfileEffect.ShowError -> { /* Show error snackbar */ }
             }
@@ -81,7 +83,12 @@ fun ProfileScreen(
                     modifier = Modifier.padding(16.dp).fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("0", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                    Text(
+                        text = state.reviewCount.toString(),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2E7D32)
+                    )
                     Text("Reseñas enviadas", fontSize = 14.sp, color = Color.Gray)
                     Spacer(modifier = Modifier.height(8.dp))
                     // Icon for reviews

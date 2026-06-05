@@ -12,7 +12,11 @@ import com.ucb.food.profile.domain.usecase.GetUserProfileUseCase
 import com.ucb.food.profile.domain.usecase.SyncProfileUseCase
 import com.ucb.food.profile.domain.usecase.UpdateUserProfileUseCase
 import com.ucb.food.restaurant.domain.usecase.AddReviewUseCase
+import com.ucb.food.restaurant.domain.usecase.GetMenuUseCase
+import com.ucb.food.restaurant.domain.usecase.GetRestaurantDetailsUseCase
 import com.ucb.food.restaurant.domain.usecase.GetRestaurantsUseCase
+import com.ucb.food.restaurant.domain.usecase.GetReviewsUseCase
+import com.ucb.food.restaurant.domain.usecase.GetUserReviewsUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -34,5 +38,9 @@ val domainModule = module {
 
     // Restaurant
     singleOf(::GetRestaurantsUseCase)
+    singleOf(::GetRestaurantDetailsUseCase)
+    singleOf(::GetMenuUseCase)
+    singleOf(::GetReviewsUseCase)
+    singleOf(::GetUserReviewsUseCase)
     singleOf(::AddReviewUseCase)
 }

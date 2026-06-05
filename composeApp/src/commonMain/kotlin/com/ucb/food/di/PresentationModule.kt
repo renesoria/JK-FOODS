@@ -16,6 +16,8 @@ import com.ucb.food.firebase.FirebaseTestViewModel
 import com.ucb.food.onboarding.presentation.viewmodel.OnboardingViewModel
 import com.ucb.food.profile.presentation.viewmodel.ProfileEditViewModel
 import com.ucb.food.profile.presentation.viewmodel.ProfileViewModel
+import com.ucb.food.restaurant.presentation.viewmodel.RestaurantDetailViewModel
+import com.ucb.food.restaurant.presentation.viewmodel.AddReviewViewModel
 import com.ucb.food.navigation.NavigationViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -38,4 +40,6 @@ val presentationModule = module {
     viewModelOf(::OnboardingViewModel)
     viewModelOf(::ProfileViewModel)
     viewModelOf(::ProfileEditViewModel)
+    viewModelOf(::RestaurantDetailViewModel)
+    viewModelOf(::AddReviewViewModel)
 }

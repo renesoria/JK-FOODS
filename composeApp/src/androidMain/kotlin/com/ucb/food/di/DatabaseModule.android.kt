@@ -12,4 +12,5 @@ actual val databaseModule = module {
     single { get<AppDatabase>().getEventDao() }
     single { get<AppDatabase>().getConfigDao() }
     single { get<AppDatabase>().getUserDao() }
+    single { get<AppDatabase>().getRestaurantDao() }
 }

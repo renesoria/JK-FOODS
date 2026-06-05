@@ -10,5 +10,6 @@ interface RestaurantRepository {
     fun getRestaurantDetails(id: String): Flow<RestaurantModel?>
     fun getMenu(restaurantId: String): Flow<List<DishModel>>
     fun getReviews(branchId: String): Flow<List<ReviewModel>>
+    fun getUserReviews(userId: String): Flow<List<ReviewModel>>
     suspend fun addReview(review: ReviewModel)
 }

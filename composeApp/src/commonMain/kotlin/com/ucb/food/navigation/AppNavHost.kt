@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.ucb.food.country.presentation.screen.CountryScreen
 import com.ucb.food.crypto.presentation.screen.CryptoScreen
 import com.ucb.food.fakestore.presentation.screen.StoreScreen
@@ -18,6 +19,9 @@ import com.ucb.food.profile.presentation.screen.ProfileScreen
 import com.ucb.food.signin.presentation.screen.SigninScreen
 import com.ucb.food.home.presentation.screen.HomeScreen
 import com.ucb.food.onboarding.presentation.screen.OnboardingScreen
+import com.ucb.food.restaurant.presentation.screen.RestaurantDetailScreen
+import com.ucb.food.restaurant.presentation.screen.AddReviewScreen
+import com.ucb.food.profile.presentation.screen.MyReviewsScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -44,6 +48,7 @@ fun AppNavHost(
             composable<NavRoute.Profile> {
                 ProfileScreen(
                     onNavigateToEditProfile = { navController.navigate(NavRoute.ProfileEdit) },
+                    onNavigateToMyReviews = { navController.navigate(NavRoute.MyReviews) },
                     onNavigateToLogin = {
                         navController.navigate(NavRoute.Login) {
                             popUpTo(NavRoute.Home) { inclusive = true }
@@ -101,7 +106,35 @@ fun AppNavHost(
                         navController.navigate(NavRoute.Login) {
                             popUpTo(NavRoute.Home) { inclusive = true }
                         }
+                    },
+                    onNavigateToRestaurantDetail = { id ->
+                        navController.navigate(NavRoute.RestaurantDetail(id))
                     }
+                )
+            }
+            
+            composable<NavRoute.RestaurantDetail> { backStackEntry ->
+                val route: NavRoute.RestaurantDetail = backStackEntry.toRoute()
+                RestaurantDetailScreen(
+                    restaurantId = route.id,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToAddReview = { id ->
+                        navController.navigate(NavRoute.AddReview(id))
+                    }
+                )
+            }
+            
+            composable<NavRoute.AddReview> { backStackEntry ->
+                val route: NavRoute.AddReview = backStackEntry.toRoute()
+                AddReviewScreen(
+                    restaurantId = route.restaurantId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable<NavRoute.MyReviews> {
+                MyReviewsScreen(
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
         }

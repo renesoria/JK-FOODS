@@ -4,6 +4,7 @@ import com.ucb.food.restaurant.data.dto.DishDto
 import com.ucb.food.restaurant.data.dto.RestaurantDto
 import com.ucb.food.restaurant.data.dto.ReviewDto
 import com.ucb.food.restaurant.data.mapper.toDto
+import com.ucb.food.restaurant.data.mapper.toEntity
 import com.ucb.food.restaurant.data.mapper.toModel
 import com.ucb.food.restaurant.domain.model.DishModel
 import com.ucb.food.restaurant.domain.model.RestaurantModel
@@ -13,29 +14,51 @@ import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.database.database
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
 
-class RestaurantRepositoryImpl : RestaurantRepository {
+class RestaurantRepositoryImpl(
+    private val restaurantDao: RestaurantDao
+) : RestaurantRepository {
     private val database = Firebase.database.reference()
+    private val repositoryScope = CoroutineScope(Dispatchers.IO)
+
+    init {
+        // Sincronización proactiva en segundo plano
+        syncFromRemote()
+    }
+
+    private fun syncFromRemote() {
+        repositoryScope.launch {
+            // Sincronizar restaurantes
+            database.child("restaurants").valueEvents.collect { snapshot ->
+                val dtos = snapshot.children.mapNotNull { it.value<RestaurantDto>() }
+                restaurantDao.insertRestaurants(dtos.map { it.toEntity() })
+            }
+        }
+    }
 
     override fun getRestaurants(): Flow<List<RestaurantModel>> {
-        return database.child("restaurants").valueEvents.map { snapshot ->
-            snapshot.children.mapNotNull { child ->
-                child.value<RestaurantDto>().toModel()
-            }
+        return restaurantDao.getAllRestaurants().map { list -> 
+            list.map { it.toModel() } 
         }
     }
 
     override fun getRestaurantDetails(id: String): Flow<RestaurantModel?> {
-        return database.child("restaurants").child(id).valueEvents.map { snapshot ->
-            if (snapshot.exists) snapshot.value<RestaurantDto>().toModel() else null
-        }
+        return restaurantDao.getRestaurantById(id).map { it?.toModel() }
     }
 
     override fun getMenu(restaurantId: String): Flow<List<DishModel>> {
-        return database.child("menu").child(restaurantId).valueEvents.map { snapshot ->
-            snapshot.children.mapNotNull { child ->
-                child.value<DishDto>().toModel()
+        repositoryScope.launch {
+            database.child("menu").child(restaurantId).valueEvents.collect { snapshot ->
+                val dtos = snapshot.children.mapNotNull { it.value<DishDto>() }
+                restaurantDao.insertDishes(dtos.map { it.toEntity() })
             }
+        }
+        return restaurantDao.getMenuByRestaurant(restaurantId).map { list ->
+            list.map { it.toModel() }
         }
     }
 
@@ -47,16 +70,33 @@ class RestaurantRepositoryImpl : RestaurantRepository {
         }
     }
 
+    override fun getUserReviews(userId: String): Flow<List<ReviewModel>> {
+        return database.child("reviews").valueEvents.map { snapshot ->
+            // Estructura: reviews -> branchId -> reviewId -> data
+            val allReviews = mutableListOf<ReviewModel>()
+            snapshot.children.forEach { branchSnapshot ->
+                branchSnapshot.children.forEach { reviewSnapshot ->
+                    try {
+                        val dto = reviewSnapshot.value<ReviewDto>()
+                        if (dto.userId == userId) {
+                            allReviews.add(dto.toModel())
+                        }
+                    } catch (e: Exception) {
+                        // Ignorar si el formato no coincide
+                    }
+                }
+            }
+            allReviews
+        }
+    }
+
     override suspend fun addReview(review: ReviewModel) {
         val reviewDto = review.toDto()
         val branchId = review.branchId
+        if (branchId.isBlank()) return // Evitar guardar si no hay sucursal
+
         val reviewId = database.child("reviews").child(branchId).push().key ?: ""
-        val finalReview = reviewDto.copy(id = reviewId, timestamp = DateTimeUtils.now())
+        val finalReview = reviewDto.copy(id = reviewId, timestamp = 0L)
         database.child("reviews").child(branchId).child(reviewId).setValue(finalReview)
     }
-}
-
-// Utility to get timestamp
-object DateTimeUtils {
-    fun now(): Long = dev.gitlive.firebase.database.ServerValue.TIMESTAMP as? Long ?: 0L // Note: This might need adjustment based on how ServerValue works in KMP
 }

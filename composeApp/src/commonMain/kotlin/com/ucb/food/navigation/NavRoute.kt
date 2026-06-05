@@ -43,4 +43,13 @@ sealed class NavRoute {
 
     @Serializable
     object Onboarding: NavRoute()
+    
+    @Serializable
+    data class RestaurantDetail(val id: String) : NavRoute()
+    
+    @Serializable
+    data class AddReview(val restaurantId: String) : NavRoute()
+    
+    @Serializable
+    object MyReviews: NavRoute()
 }

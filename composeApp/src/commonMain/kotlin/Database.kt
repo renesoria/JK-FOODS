@@ -1,21 +1,20 @@
-import androidx.room.ConstructedBy
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.RoomDatabaseConstructor
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.room.*
+import com.ucb.food.restaurant.data.repository.DishEntity
+import com.ucb.food.restaurant.data.repository.RestaurantDao
+import com.ucb.food.restaurant.data.repository.RestaurantEntity
+import com.ucb.food.login.data.repository.UserDao
+import com.ucb.food.login.data.repository.UserEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-import com.ucb.food.login.data.repository.UserDao
-import com.ucb.food.login.data.repository.UserEntity
-
-@Database(entities = [TodoEntity::class, AppEventEntity::class, ConfigEntity::class, UserEntity::class], version = 4)
+@Database(entities = [TodoEntity::class, AppEventEntity::class, ConfigEntity::class, UserEntity::class, RestaurantEntity::class, DishEntity::class], version = 6)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getDao(): TodoDao
     abstract fun getEventDao(): AppEventDao
     abstract fun getConfigDao(): ConfigDao
     abstract fun getUserDao(): UserDao
+    abstract fun getRestaurantDao(): RestaurantDao
 }
 
 @Suppress("KotlinNoActualForExpect")
@@ -27,8 +26,7 @@ fun getRoomDatabase(
     builder: RoomDatabase.Builder<AppDatabase>
 ): AppDatabase {
     return builder
-        .setDriver(BundledSQLiteDriver())
+        .setDriver(androidx.sqlite.driver.bundled.BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
-        .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
 }
