@@ -31,6 +31,7 @@ class AddReviewViewModel(
         when (event) {
             is AddReviewEvent.LoadData -> loadData(event.restaurantId)
             is AddReviewEvent.OnRatingChanged -> _state.update { it.copy(rating = event.rating) }
+            is AddReviewEvent.OnBranchSelected -> _state.update { it.copy(selectedBranch = event.branch) }
             is AddReviewEvent.OnCommentChanged -> _state.update { it.copy(comment = event.comment) }
             is AddReviewEvent.OnPhotoSelected -> _state.update { it.copy(photoBase64 = event.base64) }
             is AddReviewEvent.OnDishToggle -> toggleDish(event.dishId)
@@ -61,6 +62,8 @@ class AddReviewViewModel(
                     it.copy(
                         isLoading = false,
                         restaurant = restaurant,
+                        branches = restaurant?.branches ?: emptyList(),
+                        selectedBranch = restaurant?.branches?.firstOrNull(),
                         menu = menu
                     )
                 }
@@ -88,8 +91,8 @@ class AddReviewViewModel(
             try {
                 val user = userDao.getCurrentUserFlow().firstOrNull()
                 
-                // IMPORTANTE: Aseguramos que el branchId no esté vacío
-                val branchId = s.restaurant?.branches?.firstOrNull()?.id ?: ""
+                // Priorizar la sucursal seleccionada
+                val branchId = s.selectedBranch?.id ?: s.restaurant?.branches?.firstOrNull()?.id ?: ""
                 
                 if (branchId.isBlank()) {
                     _state.update { it.copy(isLoading = false) }
@@ -102,7 +105,7 @@ class AddReviewViewModel(
                     userName = "${user?.firstName} ${user?.lastName}",
                     userProfilePicture = user?.profilePicture,
                     restaurantId = s.restaurant?.id ?: "",
-                    restaurantName = s.restaurant?.name ?: "", // Enviamos el nombre
+                    restaurantName = s.restaurant?.name ?: "",
                     branchId = branchId,
                     rating = s.rating,
                     comment = s.comment,

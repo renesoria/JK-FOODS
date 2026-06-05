@@ -1,11 +1,14 @@
 package com.ucb.food.restaurant.presentation.state
 
+import com.ucb.food.restaurant.domain.model.BranchModel
 import com.ucb.food.restaurant.domain.model.DishModel
 import com.ucb.food.restaurant.domain.model.RestaurantModel
 
 data class AddReviewState(
     val isLoading: Boolean = false,
     val restaurant: RestaurantModel? = null,
+    val branches: List<BranchModel> = emptyList(),
+    val selectedBranch: BranchModel? = null,
     val menu: List<DishModel> = emptyList(),
     val rating: Int = 0,
     val comment: String = "",

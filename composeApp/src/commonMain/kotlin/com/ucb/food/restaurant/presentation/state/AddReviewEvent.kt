@@ -1,8 +1,11 @@
 package com.ucb.food.restaurant.presentation.state
 
+import com.ucb.food.restaurant.domain.model.BranchModel
+
 sealed interface AddReviewEvent {
     data class LoadData(val restaurantId: String) : AddReviewEvent
     data class OnRatingChanged(val rating: Int) : AddReviewEvent
+    data class OnBranchSelected(val branch: BranchModel) : AddReviewEvent
     data class OnCommentChanged(val comment: String) : AddReviewEvent
     data class OnPhotoSelected(val base64: String) : AddReviewEvent
     data class OnDishToggle(val dishId: String) : AddReviewEvent
