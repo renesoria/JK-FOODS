@@ -27,6 +27,9 @@ import com.ucb.food.restaurant.domain.model.ReviewModel
 import com.ucb.food.restaurant.presentation.state.RestaurantDetailEffect
 import com.ucb.food.restaurant.presentation.state.RestaurantDetailEvent
 import com.ucb.food.restaurant.presentation.viewmodel.RestaurantDetailViewModel
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -59,7 +62,7 @@ fun RestaurantDetailScreen(
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                Text("Add Review", color = Color.Black, fontWeight = FontWeight.Bold)
+                Text(stringResource(Res.string.restaurant_add_review), color = Color.Black, fontWeight = FontWeight.Bold)
             }
         },
         floatingActionButtonPosition = FabPosition.Center
@@ -123,7 +126,7 @@ fun RestaurantDetailScreen(
                             Spacer(modifier = Modifier.width(16.dp))
                             
                             Text(
-                                text = state.restaurant?.name ?: "Restaurant",
+                                text = state.restaurant?.name ?: stringResource(Res.string.restaurant_fallback_name),
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF8B6B11)
@@ -159,7 +162,7 @@ fun RestaurantDetailScreen(
                     item {
                         Spacer(modifier = Modifier.height(32.dp))
                         Text(
-                            text = "Opiniones de la gente",
+                            text = stringResource(Res.string.restaurant_reviews_title),
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
@@ -171,7 +174,7 @@ fun RestaurantDetailScreen(
                     if (state.reviews.isEmpty()) {
                         item {
                             Text(
-                                "Aún no hay reseñas. ¡Sé el primero!",
+                                stringResource(Res.string.restaurant_no_reviews),
                                 color = Color.Gray,
                                 modifier = Modifier.padding(24.dp)
                             )
@@ -206,7 +209,7 @@ fun ReviewListItem(review: ReviewModel) {
                 Column {
                     Text(text = review.userName, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     if (review.restaurantName.isNotBlank()) {
-                        Text(text = "en ${review.restaurantName}", fontSize = 12.sp, color = Color.Gray)
+                        Text(text = stringResource(Res.string.restaurant_review_at, review.restaurantName), fontSize = 12.sp, color = Color.Gray)
                     }
                     Row {
                         (1..5).forEach { index ->
@@ -243,10 +246,10 @@ fun ReviewListItem(review: ReviewModel) {
                 modifier = Modifier.padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                if (review.hasParking) TinyTag("🚗 Parqueo")
-                if (review.isPetFriendly) TinyTag("🐾 Pet Friendly")
-                if (review.isFastService) TinyTag("⚡ Rápido")
-                if (review.isClean) TinyTag("🧼 Limpio")
+                if (review.hasParking) TinyTag(stringResource(Res.string.chip_parking))
+                if (review.isPetFriendly) TinyTag(stringResource(Res.string.chip_pet_friendly))
+                if (review.isFastService) TinyTag(stringResource(Res.string.chip_fast_service))
+                if (review.isClean) TinyTag(stringResource(Res.string.chip_clean))
             }
         }
     }
@@ -298,7 +301,7 @@ fun DishListItem(dish: DishModel) {
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "checken karachi special fried checken eith green spice", // Placeholder como en la imagen
+                text = "Especialidad de la casa", // Usamos placeholder ya que el modelo no tiene descripción
                 fontSize = 12.sp,
                 color = Color.Gray,
                 lineHeight = 16.sp

@@ -17,6 +17,9 @@ import androidx.compose.ui.unit.sp
 import com.ucb.food.login.presentation.state.LoginEffect
 import com.ucb.food.login.presentation.state.LoginEvent
 import com.ucb.food.login.presentation.viewmodel.LoginModuleViewModel
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -80,7 +83,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = "Log In",
+                    text = stringResource(Res.string.login_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFA67C00)
@@ -92,7 +95,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = state.email,
                 onValueChange = { viewModel.onEvent(LoginEvent.OnEmailChange(it)) },
-                placeholder = { Text("Email Address") },
+                placeholder = { Text(stringResource(Res.string.login_email_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 isError = state.emailError != null,
@@ -108,7 +111,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = state.password,
                 onValueChange = { viewModel.onEvent(LoginEvent.OnPasswordChange(it)) },
-                placeholder = { Text("Password") },
+                placeholder = { Text(stringResource(Res.string.login_password_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 isError = state.passwordError != null,
@@ -134,7 +137,7 @@ fun LoginScreen(
                 if (state.isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Log In", color = Color.White, fontSize = 18.sp)
+                    Text(stringResource(Res.string.login_btn), color = Color.White, fontSize = 18.sp)
                 }
             }
 
@@ -144,9 +147,9 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "Don't Have User ID? ", color = Color.Gray)
+                Text(text = stringResource(Res.string.login_no_account), color = Color.Gray)
                 Text(
-                    text = "SignUp Now",
+                    text = stringResource(Res.string.login_signup_now),
                     color = Color.Red,
                     modifier = Modifier.clickable { viewModel.onEvent(LoginEvent.OnSignUpClick) },
                     fontWeight = FontWeight.Bold

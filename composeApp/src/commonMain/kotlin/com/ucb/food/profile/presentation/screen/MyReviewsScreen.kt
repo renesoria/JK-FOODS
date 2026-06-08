@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ucb.food.profile.presentation.viewmodel.ProfileViewModel
 import com.ucb.food.restaurant.presentation.screen.ReviewListItem
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +35,7 @@ fun MyReviewsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mis Reseñas", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(Res.string.my_reviews_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     Box(
                         modifier = Modifier
@@ -62,7 +65,7 @@ fun MyReviewsScreen(
             }
         } else if (state.reviews.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Text("Aún no has escrito ninguna reseña.", color = Color.Gray)
+                Text(stringResource(Res.string.my_reviews_empty), color = Color.Gray)
             }
         } else {
             LazyColumn(

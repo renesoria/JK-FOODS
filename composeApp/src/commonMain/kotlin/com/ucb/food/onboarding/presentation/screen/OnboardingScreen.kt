@@ -1,6 +1,5 @@
 package com.ucb.food.onboarding.presentation.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -8,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -16,8 +14,9 @@ import androidx.compose.ui.unit.sp
 import com.ucb.food.onboarding.domain.model.OnboardingItem
 import com.ucb.food.onboarding.presentation.state.OnboardingEvent
 import com.ucb.food.onboarding.presentation.viewmodel.OnboardingViewModel
+import kotlinproject.composeapp.generated.resources.*
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -37,7 +36,7 @@ fun OnboardingScreen(
 
     if (state.items.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No se pudo cargar la configuración")
+            Text(stringResource(Res.string.onboarding_load_error))
         }
         return
     }
@@ -47,7 +46,7 @@ fun OnboardingScreen(
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             TextButton(onClick = onNavigateToLogin) {
-                Text("Omitir")
+                Text(stringResource(Res.string.onboarding_skip))
             }
         }
 
@@ -67,7 +66,7 @@ fun OnboardingScreen(
                 OutlinedButton(onClick = {
                     scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) }
                 }) {
-                    Text("Anterior")
+                    Text(stringResource(Res.string.onboarding_previous))
                 }
             } else {
                 Spacer(modifier = Modifier.width(100.dp))
@@ -78,13 +77,13 @@ fun OnboardingScreen(
                     viewModel.onEvent(OnboardingEvent.OnFinish)
                     onNavigateToLogin()
                 }) {
-                    Text("Iniciar")
+                    Text(stringResource(Res.string.onboarding_start))
                 }
             } else {
                 Button(onClick = {
                     scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                 }) {
-                    Text("Siguiente")
+                    Text(stringResource(Res.string.onboarding_next))
                 }
             }
         }
@@ -98,10 +97,6 @@ fun OnboardingItemContent(item: OnboardingItem) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Note: For remote images we need a loader, but user said standard resources aren't loading.
-        // If item.imageUrl is a URL, this will fail. If it's a resource path, we need painterResource.
-        // For now, let's just show text to avoid crashes if the image is missing.
-        
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = item.title,

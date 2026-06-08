@@ -30,9 +30,9 @@ import com.ucb.food.home.presentation.state.HomeEvent
 import com.ucb.food.home.presentation.viewmodel.HomeViewModel
 import com.ucb.food.restaurant.domain.model.RestaurantModel
 import kotlinproject.composeapp.generated.resources.Res
-import kotlinproject.composeapp.generated.resources.fotoComida1
-import kotlinproject.composeapp.generated.resources.paraHotDeals
+import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -83,7 +83,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 12.dp),
-                        placeholder = { Text("Buscar restaurante o comida...") },
+                        placeholder = { Text(stringResource(Res.string.home_search_placeholder)) },
                         leadingIcon = {
                             Box(modifier = Modifier.size(24.dp)) {
                                 Canvas(modifier = Modifier.fillMaxSize()) {
@@ -155,7 +155,7 @@ fun HomeScreen(
             // SECCIÓN 1: Hot Deals (Banner dinámico)
             item {
                 Text(
-                    text = "Hot Deals 🔥",
+                    text = stringResource(Res.string.home_hot_deals),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -203,13 +203,13 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Explorar Lugares",
+                        text = stringResource(Res.string.home_explore_places),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
                     Text(
-                        text = "Ver todo",
+                        text = stringResource(Res.string.home_view_all),
                         fontSize = 14.sp,
                         color = Color(0xFFA67C00),
                         modifier = Modifier.clickable { onNavigateToExplore() }
@@ -239,14 +239,14 @@ fun HomeScreen(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Top Ranking Cochala 🏆",
+                    text = stringResource(Res.string.home_top_ranking),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Text(
-                    text = "Los favoritos de la comunidad",
+                    text = stringResource(Res.string.home_community_favorites),
                     fontSize = 12.sp,
                     color = Color.Gray,
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -349,7 +349,7 @@ fun RestaurantRankingCard(restaurant: RestaurantModel, onClick: () -> Unit) {
                     fontSize = 16.sp
                 )
                 Text(
-                    text = "Puntuación: ${restaurant.overallRating} ★",
+                    text = stringResource(Res.string.home_score, restaurant.overallRating),
                     color = Color(0xFF2E7D32),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
@@ -382,7 +382,7 @@ fun HomeTopBar(viewModel: HomeViewModel) {
         }
 
         Text(
-            text = "RK Foods",
+            text = stringResource(Res.string.app_name),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFFA67C00)

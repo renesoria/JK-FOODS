@@ -24,6 +24,9 @@ import com.ucb.food.core.composable.ProfileAvatar
 import com.ucb.food.profile.presentation.state.ProfileEffect
 import com.ucb.food.profile.presentation.state.ProfileEvent
 import com.ucb.food.profile.presentation.viewmodel.ProfileViewModel
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -89,7 +92,7 @@ fun ProfileScreen(
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF2E7D32)
                     )
-                    Text("Reseñas enviadas", fontSize = 14.sp, color = Color.Gray)
+                    Text(stringResource(Res.string.profile_reviews_sent), fontSize = 14.sp, color = Color.Gray)
                     Spacer(modifier = Modifier.height(8.dp))
                     // Icon for reviews
                     Box(modifier = Modifier.size(32.dp)) {
@@ -121,29 +124,29 @@ fun ProfileScreen(
                 Column {
                     ProfileMenuItem(
                         icon = { MenuIcon(Color(0xFF81C784)) },
-                        title = "Mis reseñas",
-                        subtitle = "Revisa el estado de tus reseñas",
+                        title = stringResource(Res.string.profile_my_reviews),
+                        subtitle = stringResource(Res.string.profile_my_reviews_subtitle),
                         onClick = { viewModel.onEvent(ProfileEvent.OnMyReviewsClick) }
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray)
                     ProfileMenuItem(
                         icon = { MenuIcon(Color(0xFF64B5F6)) },
-                        title = "Editar perfil",
-                        subtitle = "Actualiza tu información personal",
+                        title = stringResource(Res.string.profile_edit_profile),
+                        subtitle = stringResource(Res.string.profile_edit_profile_subtitle),
                         onClick = { viewModel.onEvent(ProfileEvent.OnEditProfileClick) }
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray)
                     ProfileMenuItem(
                         icon = { MenuIcon(Color(0xFFFFD54F)) },
-                        title = "Notificaciones",
-                        subtitle = "Configura tus preferencias",
+                        title = stringResource(Res.string.profile_notifications),
+                        subtitle = stringResource(Res.string.profile_notifications_subtitle),
                         onClick = { viewModel.onEvent(ProfileEvent.OnNotificationsClick) }
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray)
                     ProfileMenuItem(
                         icon = { MenuIcon(Color(0xFF4DB6AC)) },
-                        title = "Acerca de la app",
-                        subtitle = "Versión 1.0.0",
+                        title = stringResource(Res.string.profile_about),
+                        subtitle = stringResource(Res.string.profile_about_subtitle),
                         onClick = { viewModel.onEvent(ProfileEvent.OnAboutClick) }
                     )
                 }
@@ -170,7 +173,7 @@ fun ProfileScreen(
                         }
                     }
                     Spacer(modifier = Modifier.width(16.dp))
-                    Text("Cerrar sesión", color = Color.Red, fontWeight = FontWeight.Bold)
+                    Text(stringResource(Res.string.profile_logout), color = Color.Red, fontWeight = FontWeight.Bold)
                 }
             }
             
@@ -220,13 +223,13 @@ fun ProfileTopBar(onBackClick: () -> Unit) {
                 
                 Column {
                     Text(
-                        text = "Mi perfil",
+                        text = stringResource(Res.string.profile_title),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF2E7D32)
                     )
                     Text(
-                        text = "Gestiona tu información y actividad",
+                        text = stringResource(Res.string.profile_subtitle),
                         fontSize = 12.sp,
                         color = Color.Gray
                     )

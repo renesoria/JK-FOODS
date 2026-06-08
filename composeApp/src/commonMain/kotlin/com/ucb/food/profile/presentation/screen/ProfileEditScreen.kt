@@ -28,6 +28,9 @@ import com.ucb.food.core.utils.rememberImagePicker
 import com.ucb.food.profile.presentation.state.ProfileEditEvent
 import com.ucb.food.profile.presentation.viewmodel.ProfileEditEffect
 import com.ucb.food.profile.presentation.viewmodel.ProfileEditViewModel
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +58,7 @@ fun ProfileEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Editar Perfil", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(Res.string.profile_edit_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     Box(
                         modifier = Modifier
@@ -138,7 +141,7 @@ fun ProfileEditScreen(
                         // Goma (arriba)
                         drawRect(
                             color = Color.White,
-                            topLeft = Offset(size.width * 0.3f, size.height * 0.1f),
+                            topLeft = Offset(size.width * 0.3f, size.height *(0.1f)),
                             size = Size(size.width * 0.3f, size.height * 0.15f)
                         )
                     }
@@ -154,12 +157,12 @@ fun ProfileEditScreen(
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    EditField(label = "Nombre", value = state.firstName, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnFirstNameChanged(it)) })
-                    EditField(label = "Apellido", value = state.lastName, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnLastNameChanged(it)) })
-                    EditField(label = "Correo Electrónico", value = state.email, onValueChange = {}, readOnly = true)
-                    EditField(label = "Dirección", value = state.address, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnAddressChanged(it)) })
+                    EditField(label = stringResource(Res.string.profile_edit_first_name), value = state.firstName, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnFirstNameChanged(it)) })
+                    EditField(label = stringResource(Res.string.profile_edit_last_name), value = state.lastName, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnLastNameChanged(it)) })
+                    EditField(label = stringResource(Res.string.profile_edit_email), value = state.email, onValueChange = {}, readOnly = true)
+                    EditField(label = stringResource(Res.string.profile_edit_address), value = state.address, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnAddressChanged(it)) })
                     EditField(
-                        label = "Nueva Contraseña",
+                        label = stringResource(Res.string.profile_edit_password),
                         value = state.password,
                         onValueChange = { viewModel.onEvent(ProfileEditEvent.OnPasswordChanged(it)) },
                         isPassword = true,
@@ -180,7 +183,7 @@ fun ProfileEditScreen(
                 if (state.isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Guardar cambios", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(Res.string.profile_edit_save), color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             }
             

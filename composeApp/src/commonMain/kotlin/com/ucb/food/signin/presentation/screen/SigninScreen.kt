@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.sp
 import com.ucb.food.signin.presentation.state.SigninEffect
 import com.ucb.food.signin.presentation.state.SigninEvent
 import com.ucb.food.signin.presentation.viewmodel.SigninViewModel
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -89,7 +92,7 @@ fun SigninScreen(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = "Sign Up",
+                    text = stringResource(Res.string.signin_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFA67C00)
@@ -102,7 +105,7 @@ fun SigninScreen(
                 OutlinedTextField(
                     value = state.firstName,
                     onValueChange = { viewModel.onEvent(SigninEvent.OnFirstNameChanged(it)) },
-                    placeholder = { Text("First Name", fontSize = 12.sp) },
+                    placeholder = { Text(stringResource(Res.string.signin_first_name), fontSize = 12.sp) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     isError = state.firstNameError != null,
@@ -116,7 +119,7 @@ fun SigninScreen(
                 OutlinedTextField(
                     value = state.lastName,
                     onValueChange = { viewModel.onEvent(SigninEvent.OnLastNameChanged(it)) },
-                    placeholder = { Text("Last Name", fontSize = 12.sp) },
+                    placeholder = { Text(stringResource(Res.string.signin_last_name), fontSize = 12.sp) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     isError = state.lastNameError != null,
@@ -133,7 +136,7 @@ fun SigninScreen(
             OutlinedTextField(
                 value = state.mobileNumber,
                 onValueChange = { viewModel.onEvent(SigninEvent.OnMobileNumberChanged(it)) },
-                placeholder = { Text("Mobile Number") },
+                placeholder = { Text(stringResource(Res.string.signin_mobile_number)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 isError = state.mobileError != null,
@@ -149,7 +152,7 @@ fun SigninScreen(
             OutlinedTextField(
                 value = state.email,
                 onValueChange = { viewModel.onEvent(SigninEvent.OnEmailChanged(it)) },
-                placeholder = { Text("E-Mail ID") },
+                placeholder = { Text(stringResource(Res.string.signin_email)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 isError = state.emailError != null,
@@ -165,10 +168,14 @@ fun SigninScreen(
             var expanded by remember { mutableStateOf(false) }
             Box(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
-                    value = state.gender,
+                    value = when(state.gender) {
+                        "Male" -> stringResource(Res.string.signin_gender_male)
+                        "Female" -> stringResource(Res.string.signin_gender_female)
+                        else -> state.gender
+                    },
                     onValueChange = { },
                     readOnly = true,
-                    placeholder = { Text("Male/Female") },
+                    placeholder = { Text(stringResource(Res.string.signin_gender_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     trailingIcon = {
@@ -194,14 +201,14 @@ fun SigninScreen(
                 )
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     DropdownMenuItem(
-                        text = { Text("Male") },
+                        text = { Text(stringResource(Res.string.signin_gender_male)) },
                         onClick = {
                             viewModel.onEvent(SigninEvent.OnGenderChanged("Male"))
                             expanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Female") },
+                        text = { Text(stringResource(Res.string.signin_gender_female)) },
                         onClick = {
                             viewModel.onEvent(SigninEvent.OnGenderChanged("Female"))
                             expanded = false
@@ -215,7 +222,7 @@ fun SigninScreen(
             OutlinedTextField(
                 value = state.password,
                 onValueChange = { viewModel.onEvent(SigninEvent.OnPasswordChanged(it)) },
-                placeholder = { Text("Password") },
+                placeholder = { Text(stringResource(Res.string.login_password_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 isError = state.passwordError != null,
@@ -233,7 +240,7 @@ fun SigninScreen(
             OutlinedTextField(
                 value = state.address,
                 onValueChange = { viewModel.onEvent(SigninEvent.OnAddressChanged(it)) },
-                placeholder = { Text("ADDRESS") },
+                placeholder = { Text(stringResource(Res.string.signin_address)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp),
@@ -261,7 +268,7 @@ fun SigninScreen(
                 if (state.isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                 } else {
-                    Text("SignUp", color = Color.White, fontSize = 18.sp)
+                    Text(stringResource(Res.string.signin_button), color = Color.White, fontSize = 18.sp)
                 }
             }
 
@@ -271,9 +278,9 @@ fun SigninScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "Already have an Account? ", color = Color.Gray)
+                Text(text = stringResource(Res.string.signin_already_account), color = Color.Gray)
                 Text(
-                    text = "Login",
+                    text = stringResource(Res.string.signin_login_link),
                     color = Color.Red,
                     modifier = Modifier.clickable { viewModel.onEvent(SigninEvent.OnLoginClick) },
                     fontWeight = FontWeight.Bold

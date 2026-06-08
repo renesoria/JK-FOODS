@@ -14,6 +14,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BottomNavigationBar(
@@ -41,25 +44,25 @@ fun BottomNavigationBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             BottomNavItem(
-                label = "Home",
+                label = stringResource(Res.string.nav_home),
                 isSelected = currentRoute is NavRoute.Home,
                 onClick = { onNavigate(NavRoute.Home) },
                 icon = { HomeIcon(it) }
             )
             BottomNavItem(
-                label = "Mapa",
+                label = stringResource(Res.string.nav_map),
                 isSelected = false, 
                 onClick = { /* TODO */ },
                 icon = { MapIcon(it) }
             )
             BottomNavItem(
-                label = "Reviews",
+                label = stringResource(Res.string.nav_reviews),
                 isSelected = currentRoute is NavRoute.MyReviews,
                 onClick = { onNavigate(NavRoute.MyReviews) },
                 icon = { StarIcon(it) }
             )
             BottomNavItem(
-                label = "Perfil",
+                label = stringResource(Res.string.nav_profile),
                 isSelected = currentRoute is NavRoute.Profile,
                 onClick = { onNavigate(NavRoute.Profile) },
                 icon = { ProfileIcon(it) }

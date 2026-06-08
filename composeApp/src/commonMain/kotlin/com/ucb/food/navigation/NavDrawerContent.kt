@@ -14,6 +14,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NavDrawerContent(
@@ -67,11 +70,11 @@ fun NavDrawerContent(
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                DrawerItem("Home") { onNavigate(NavRoute.Home); onCloseDrawer() }
-                DrawerItem("Profile") { onNavigate(NavRoute.Profile); onCloseDrawer() }
-                DrawerItem("Reviews") { onNavigate(NavRoute.MyReviews); onCloseDrawer() }
-                DrawerItem("Notifications") { /* TODO */ }
-                DrawerItem("Search") { onNavigate(NavRoute.Explore); onCloseDrawer() }
+                DrawerItem(stringResource(Res.string.nav_home)) { onNavigate(NavRoute.Home); onCloseDrawer() }
+                DrawerItem(stringResource(Res.string.nav_profile)) { onNavigate(NavRoute.Profile); onCloseDrawer() }
+                DrawerItem(stringResource(Res.string.nav_reviews)) { onNavigate(NavRoute.MyReviews); onCloseDrawer() }
+                DrawerItem(stringResource(Res.string.nav_notifications)) { /* TODO */ }
+                DrawerItem(stringResource(Res.string.nav_search)) { onNavigate(NavRoute.Explore); onCloseDrawer() }
             }
         }
     }

@@ -25,6 +25,9 @@ import coil3.compose.AsyncImage
 import com.ucb.food.home.presentation.state.HomeEvent
 import com.ucb.food.home.presentation.viewmodel.HomeViewModel
 import com.ucb.food.restaurant.domain.model.RestaurantModel
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +42,7 @@ fun ExploreRestaurantsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Explorar Restaurantes", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(Res.string.explore_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Canvas(modifier = Modifier.size(24.dp)) {
@@ -71,7 +74,7 @@ fun ExploreRestaurantsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholder = { Text("Buscar por nombre...") },
+                placeholder = { Text(stringResource(Res.string.explore_search_placeholder)) },
                 leadingIcon = {
                     Box(modifier = Modifier.size(20.dp)) {
                         Canvas(modifier = Modifier.fillMaxSize()) {

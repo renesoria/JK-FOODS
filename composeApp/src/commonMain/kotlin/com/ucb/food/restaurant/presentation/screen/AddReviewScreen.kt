@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -26,6 +25,9 @@ import com.ucb.food.core.utils.rememberImagePicker
 import com.ucb.food.restaurant.presentation.state.AddReviewEffect
 import com.ucb.food.restaurant.presentation.state.AddReviewEvent
 import com.ucb.food.restaurant.presentation.viewmodel.AddReviewViewModel
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -75,7 +77,7 @@ fun AddReviewScreen(
                     }
                 }
                 Text(
-                    text = "Add Review",
+                    text = stringResource(Res.string.restaurant_add_review),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF8B6B11),
@@ -95,7 +97,7 @@ fun AddReviewScreen(
             // Selector de Sucursal
             item {
                 Text(
-                    text = "¿Qué sucursal visitaste?",
+                    text = stringResource(Res.string.add_review_branch_question),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                     textAlign = TextAlign.Start
@@ -116,7 +118,7 @@ fun AddReviewScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = state.selectedBranch?.address ?: "Seleccionar sucursal",
+                                text = state.selectedBranch?.address ?: stringResource(Res.string.add_review_select_branch),
                                 fontSize = 14.sp
                             )
                             // Icono flecha abajo
@@ -199,7 +201,7 @@ fun AddReviewScreen(
             // Checklist Attributes (Chips)
             item {
                 Text(
-                    text = "¿Qué tal el lugar?",
+                    text = stringResource(Res.string.add_review_place_question),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Start
@@ -208,15 +210,15 @@ fun AddReviewScreen(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    ReviewChip("🚗 Parqueo", state.hasParking) { viewModel.onEvent(AddReviewEvent.OnToggleParking) }
-                    ReviewChip("📶 Wi-Fi", state.hasWifi) { viewModel.onEvent(AddReviewEvent.OnToggleWifi) }
-                    ReviewChip("💳 QR/Tarjeta", state.acceptsDigitalPayment) { viewModel.onEvent(AddReviewEvent.OnTogglePayment) }
-                    ReviewChip("🐾 Pet Friendly", state.isPetFriendly) { viewModel.onEvent(AddReviewEvent.OnTogglePetFriendly) }
-                    ReviewChip("🧒 Niños", state.hasKidsArea) { viewModel.onEvent(AddReviewEvent.OnToggleKidsArea) }
-                    ReviewChip("⚡ Rápido", state.isFastService) { viewModel.onEvent(AddReviewEvent.OnToggleFastService) }
-                    ReviewChip("🧼 Limpio", state.isClean) { viewModel.onEvent(AddReviewEvent.OnToggleClean) }
-                    ReviewChip("🪑 Acogedor", state.isCozy) { viewModel.onEvent(AddReviewEvent.OnToggleCozy) }
-                    ReviewChip("💰 Precio Justo", state.isFairPrice) { viewModel.onEvent(AddReviewEvent.OnToggleFairPrice) }
+                    ReviewChip(stringResource(Res.string.chip_parking), state.hasParking) { viewModel.onEvent(AddReviewEvent.OnToggleParking) }
+                    ReviewChip(stringResource(Res.string.chip_wifi), state.hasWifi) { viewModel.onEvent(AddReviewEvent.OnToggleWifi) }
+                    ReviewChip(stringResource(Res.string.chip_payment), state.acceptsDigitalPayment) { viewModel.onEvent(AddReviewEvent.OnTogglePayment) }
+                    ReviewChip(stringResource(Res.string.chip_pet_friendly), state.isPetFriendly) { viewModel.onEvent(AddReviewEvent.OnTogglePetFriendly) }
+                    ReviewChip(stringResource(Res.string.chip_kids), state.hasKidsArea) { viewModel.onEvent(AddReviewEvent.OnToggleKidsArea) }
+                    ReviewChip(stringResource(Res.string.chip_fast_service), state.isFastService) { viewModel.onEvent(AddReviewEvent.OnToggleFastService) }
+                    ReviewChip(stringResource(Res.string.chip_clean), state.isClean) { viewModel.onEvent(AddReviewEvent.OnToggleClean) }
+                    ReviewChip(stringResource(Res.string.chip_cozy), state.isCozy) { viewModel.onEvent(AddReviewEvent.OnToggleCozy) }
+                    ReviewChip(stringResource(Res.string.chip_fair_price), state.isFairPrice) { viewModel.onEvent(AddReviewEvent.OnToggleFairPrice) }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -227,7 +229,7 @@ fun AddReviewScreen(
                     value = state.comment,
                     onValueChange = { viewModel.onEvent(AddReviewEvent.OnCommentChanged(it)) },
                     modifier = Modifier.fillMaxWidth().height(120.dp),
-                    placeholder = { Text("Escribe tu reseña...") },
+                    placeholder = { Text(stringResource(Res.string.add_review_comment_placeholder)) },
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFF8B6B11)
@@ -239,7 +241,7 @@ fun AddReviewScreen(
             // Vincular platos
             item {
                 Text(
-                    text = "¿Qué consumiste?",
+                    text = stringResource(Res.string.add_review_consumption_question),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Start
@@ -274,7 +276,7 @@ fun AddReviewScreen(
                     enabled = !state.isLoading
                 ) {
                     if (state.isLoading) CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                    else Text("Send", color = Color.White, fontWeight = FontWeight.Bold)
+                    else Text(stringResource(Res.string.add_review_send), color = Color.White, fontWeight = FontWeight.Bold)
                 }
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -283,7 +285,7 @@ fun AddReviewScreen(
                     onClick = { viewModel.onEvent(AddReviewEvent.OnCancelClick) },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Cancel", color = Color.Red, fontWeight = FontWeight.Bold)
+                    Text(stringResource(Res.string.add_review_cancel), color = Color.Red, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(40.dp))
             }
