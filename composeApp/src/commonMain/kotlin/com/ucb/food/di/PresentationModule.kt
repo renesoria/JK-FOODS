@@ -18,12 +18,14 @@ import com.ucb.food.profile.presentation.viewmodel.ProfileEditViewModel
 import com.ucb.food.profile.presentation.viewmodel.ProfileViewModel
 import com.ucb.food.restaurant.presentation.viewmodel.RestaurantDetailViewModel
 import com.ucb.food.restaurant.presentation.viewmodel.AddReviewViewModel
+import com.ucb.food.core.presentation.viewmodel.ThemeViewModel
 import com.ucb.food.navigation.NavigationViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val presentationModule = module {
     viewModelOf(::NavigationViewModel)
+    viewModelOf(::ThemeViewModel)
     viewModelOf(::ProductDetailViewModel)
     viewModelOf(::CounterViewModel)
     viewModelOf(::IncrementViewModel)

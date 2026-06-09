@@ -8,6 +8,9 @@ import androidx.compose.ui.unit.sp
 @Immutable
 data class Typography(
     val headlineLarge: TextStyle,
+    val headlineMedium: TextStyle,
+    val headlineSmall: TextStyle,
+    val bodyLarge: TextStyle,
     val bodyMedium: TextStyle,
     val labelLarge: TextStyle,
 )
@@ -18,6 +21,21 @@ val DefaultTypography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = 40.sp
+    ),
+    headlineMedium = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 28.sp,
+        lineHeight = 36.sp
+    ),
+    headlineSmall = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp
+    ),
+    bodyLarge = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,
+        lineHeight = 26.sp
     ),
     bodyMedium = TextStyle(
         fontWeight = FontWeight.Normal,

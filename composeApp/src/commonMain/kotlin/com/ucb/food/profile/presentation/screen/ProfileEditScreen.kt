@@ -32,6 +32,7 @@ import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.example.designsystem.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +42,7 @@ fun ProfileEditScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val colors = AppTheme.colors
 
     // Selector de imágenes nativo
     val imagePicker = rememberImagePicker { base64 ->
@@ -58,7 +60,7 @@ fun ProfileEditScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.profile_edit_title), fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(Res.string.profile_edit_title), fontWeight = FontWeight.Bold, color = colors.primary) },
                 navigationIcon = {
                     Box(
                         modifier = Modifier
@@ -76,13 +78,13 @@ fun ProfileEditScreen(
                             }
                             drawPath(
                                 path = path,
-                                color = Color.Black,
+                                color = colors.primary,
                                 style = Stroke(width = 2.dp.toPx())
                             )
                         }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.background)
             )
         }
     ) { padding ->
@@ -90,7 +92,7 @@ fun ProfileEditScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF5F5F5))
+                .background(colors.surface)
                 .verticalScroll(scrollState)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -114,7 +116,7 @@ fun ProfileEditScreen(
                         .size(32.dp)
                         .align(Alignment.BottomEnd)
                         .clip(CircleShape)
-                        .background(Color(0xFF1B5E20)),
+                        .background(colors.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     // Dibujo de un Lapicito (Pencil) con Canvas
@@ -154,7 +156,7 @@ fun ProfileEditScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = colors.background)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     EditField(label = stringResource(Res.string.profile_edit_first_name), value = state.firstName, onValueChange = { viewModel.onEvent(ProfileEditEvent.OnFirstNameChanged(it)) })
@@ -178,7 +180,7 @@ fun ProfileEditScreen(
                 onClick = { viewModel.onEvent(ProfileEditEvent.OnSaveClick) },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5E20))
+                colors = ButtonDefaults.buttonColors(containerColor = colors.primary)
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
@@ -204,8 +206,9 @@ fun EditField(
     isPasswordVisible: Boolean = false,
     onToggleVisibility: () -> Unit = {}
 ) {
+    val colors = AppTheme.colors
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Text(text = label, fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+        Text(text = label, fontSize = 12.sp, color = colors.textPrimary.copy(alpha = 0.6f), fontWeight = FontWeight.Bold)
         TextField(
             value = value,
             onValueChange = onValueChange,
@@ -219,7 +222,7 @@ fun EditField(
                             Canvas(modifier = Modifier.fillMaxSize()) {
                                 // Draw an "Eye" shape
                                 drawCircle(
-                                    color = if (isPasswordVisible) Color(0xFF1B5E20) else Color.Gray,
+                                    color = if (isPasswordVisible) colors.primary else colors.textPrimary.copy(alpha = 0.6f),
                                     radius = size.minDimension / 4,
                                     center = Offset(size.width / 2, size.height / 2)
                                 )
@@ -229,12 +232,12 @@ fun EditField(
                                         quadraticTo(size.width / 2, 0f, size.width, size.height / 2)
                                         quadraticTo(size.width / 2, size.height, 0f, size.height / 2)
                                     },
-                                    color = if (isPasswordVisible) Color(0xFF1B5E20) else Color.Gray,
+                                    color = if (isPasswordVisible) colors.primary else colors.textPrimary.copy(alpha = 0.6f),
                                     style = Stroke(width = 2f)
                                 )
                                 if (!isPasswordVisible) {
                                     drawLine(
-                                        color = Color.Gray,
+                                        color = colors.textPrimary.copy(alpha = 0.6f),
                                         start = Offset(0f, 0f),
                                         end = Offset(size.width, size.height),
                                         strokeWidth = 2f
@@ -249,8 +252,11 @@ fun EditField(
                 unfocusedContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.LightGray,
-                focusedIndicatorColor = Color(0xFF1B5E20)
+                unfocusedIndicatorColor = colors.textPrimary.copy(alpha = 0.12f),
+                focusedIndicatorColor = colors.primary,
+                focusedTextColor = colors.textPrimary,
+                unfocusedTextColor = colors.textPrimary,
+                disabledTextColor = colors.textPrimary.copy(alpha = 0.38f)
             )
         )
     }

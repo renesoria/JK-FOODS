@@ -55,4 +55,7 @@ sealed class NavRoute {
 
     @Serializable
     object Explore: NavRoute()
+
+    @Serializable
+    object DesignSystem: NavRoute()
 }

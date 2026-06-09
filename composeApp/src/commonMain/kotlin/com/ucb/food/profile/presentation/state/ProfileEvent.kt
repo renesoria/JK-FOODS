@@ -7,4 +7,5 @@ sealed interface ProfileEvent {
     data object OnMyReviewsClick : ProfileEvent
     data object OnNotificationsClick : ProfileEvent
     data object OnAboutClick : ProfileEvent
+    data object OnThemeToggle : ProfileEvent
 }

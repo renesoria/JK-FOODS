@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ucb.food.login.data.repository.UserDao
 import com.ucb.food.profile.domain.usecase.GetUserProfileUseCase
 import com.ucb.food.restaurant.domain.usecase.GetUserReviewsUseCase
+import com.ucb.food.core.domain.repository.ThemeRepository
 import com.ucb.food.profile.presentation.state.ProfileEffect
 import com.ucb.food.profile.presentation.state.ProfileEvent
 import com.ucb.food.profile.presentation.state.ProfileUiState
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val getUserReviewsUseCase: GetUserReviewsUseCase,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val themeRepository: ThemeRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileUiState())
@@ -29,6 +31,15 @@ class ProfileViewModel(
 
     init {
         observeUser()
+        observeTheme()
+    }
+
+    private fun observeTheme() {
+        viewModelScope.launch {
+            themeRepository.isDarkMode.collect { isDarkMode ->
+                _state.update { it.copy(isDarkMode = isDarkMode) }
+            }
+        }
     }
 
     private fun observeUser() {
@@ -68,6 +79,7 @@ class ProfileViewModel(
                 ProfileEvent.OnMyReviewsClick -> _effect.emit(ProfileEffect.NavigateToMyReviews)
                 ProfileEvent.OnNotificationsClick -> { /* TODO */ }
                 ProfileEvent.OnAboutClick -> { /* TODO */ }
+                ProfileEvent.OnThemeToggle -> themeRepository.toggleTheme()
             }
         }
     }

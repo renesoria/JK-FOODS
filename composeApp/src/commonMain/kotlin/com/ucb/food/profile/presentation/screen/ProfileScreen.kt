@@ -28,6 +28,7 @@ import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.example.designsystem.theme.AppTheme
 
 @Composable
 fun ProfileScreen(
@@ -39,6 +40,7 @@ fun ProfileScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val colors = AppTheme.colors
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -61,7 +63,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF5F5F5))
+                .background(colors.surface)
                 .verticalScroll(scrollState)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -80,7 +82,7 @@ fun ProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = colors.background)
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp).fillMaxWidth(),
@@ -90,9 +92,13 @@ fun ProfileScreen(
                         text = state.reviewCount.toString(),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2E7D32)
+                        color = colors.primary
                     )
-                    Text(stringResource(Res.string.profile_reviews_sent), fontSize = 14.sp, color = Color.Gray)
+                    Text(
+                        stringResource(Res.string.profile_reviews_sent),
+                        fontSize = 14.sp,
+                        color = colors.textPrimary.copy(alpha = 0.6f)
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     // Icon for reviews
                     Box(modifier = Modifier.size(32.dp)) {
@@ -119,7 +125,7 @@ fun ProfileScreen(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = colors.background)
             ) {
                 Column {
                     ProfileMenuItem(
@@ -128,26 +134,43 @@ fun ProfileScreen(
                         subtitle = stringResource(Res.string.profile_my_reviews_subtitle),
                         onClick = { viewModel.onEvent(ProfileEvent.OnMyReviewsClick) }
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = colors.textPrimary.copy(alpha = 0.12f))
                     ProfileMenuItem(
                         icon = { MenuIcon(Color(0xFF64B5F6)) },
                         title = stringResource(Res.string.profile_edit_profile),
                         subtitle = stringResource(Res.string.profile_edit_profile_subtitle),
                         onClick = { viewModel.onEvent(ProfileEvent.OnEditProfileClick) }
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = colors.textPrimary.copy(alpha = 0.12f))
                     ProfileMenuItem(
                         icon = { MenuIcon(Color(0xFFFFD54F)) },
                         title = stringResource(Res.string.profile_notifications),
                         subtitle = stringResource(Res.string.profile_notifications_subtitle),
                         onClick = { viewModel.onEvent(ProfileEvent.OnNotificationsClick) }
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray)
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = colors.textPrimary.copy(alpha = 0.12f))
                     ProfileMenuItem(
                         icon = { MenuIcon(Color(0xFF4DB6AC)) },
                         title = stringResource(Res.string.profile_about),
                         subtitle = stringResource(Res.string.profile_about_subtitle),
                         onClick = { viewModel.onEvent(ProfileEvent.OnAboutClick) }
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = colors.textPrimary.copy(alpha = 0.12f))
+                    ProfileMenuItem(
+                        icon = { MenuIcon(Color(0xFF424242)) },
+                        title = "Modo Oscuro",
+                        subtitle = "Cambia el tema de la aplicación",
+                        onClick = { viewModel.onEvent(ProfileEvent.OnThemeToggle) },
+                        trailing = {
+                            Switch(
+                                checked = state.isDarkMode,
+                                onCheckedChange = { viewModel.onEvent(ProfileEvent.OnThemeToggle) },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = colors.primary,
+                                    checkedTrackColor = colors.primary.copy(alpha = 0.5f)
+                                )
+                            )
+                        }
                     )
                 }
             }
@@ -159,7 +182,7 @@ fun ProfileScreen(
                 onClick = { viewModel.onEvent(ProfileEvent.OnLogoutClick) },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                colors = ButtonDefaults.buttonColors(containerColor = colors.background)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -184,6 +207,7 @@ fun ProfileScreen(
 
 @Composable
 fun ProfileTopBar(onBackClick: () -> Unit) {
+    val colors = AppTheme.colors
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -213,7 +237,7 @@ fun ProfileTopBar(onBackClick: () -> Unit) {
                         }
                         drawPath(
                             path = path,
-                            color = Color(0xFF2E7D32),
+                            color = colors.primary,
                             style = Stroke(width = 2.dp.toPx())
                         )
                     }
@@ -226,12 +250,12 @@ fun ProfileTopBar(onBackClick: () -> Unit) {
                         text = stringResource(Res.string.profile_title),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2E7D32)
+                        color = colors.primary
                     )
                     Text(
                         text = stringResource(Res.string.profile_subtitle),
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = colors.textPrimary.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -248,10 +272,11 @@ fun ProfileTopBar(onBackClick: () -> Unit) {
 
 @Composable
 fun UserHeaderCard(name: String, email: String, profilePicture: String?, onEditClick: () -> Unit) {
+    val colors = AppTheme.colors
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = colors.background)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -271,7 +296,7 @@ fun UserHeaderCard(name: String, email: String, profilePicture: String?, onEditC
                         .size(24.dp)
                         .align(Alignment.BottomEnd)
                         .clip(CircleShape)
-                        .background(Color(0xFF2E7D32))
+                        .background(colors.primary)
                         .clickable { onEditClick() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -284,8 +309,8 @@ fun UserHeaderCard(name: String, email: String, profilePicture: String?, onEditC
             Spacer(modifier = Modifier.width(16.dp))
             
             Column {
-                Text(text = name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Text(text = email, fontSize = 14.sp, color = Color.Gray)
+                Text(text = name, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = colors.textPrimary)
+                Text(text = email, fontSize = 14.sp, color = colors.textPrimary.copy(alpha = 0.6f))
             }
         }
     }
@@ -296,8 +321,10 @@ fun ProfileMenuItem(
     icon: @Composable () -> Unit,
     title: String,
     subtitle: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    trailing: (@Composable () -> Unit)? = null
 ) {
+    val colors = AppTheme.colors
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -309,7 +336,7 @@ fun ProfileMenuItem(
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFFF5F5F5)),
+                .background(colors.surface),
             contentAlignment = Alignment.Center
         ) {
             icon()
@@ -318,19 +345,23 @@ fun ProfileMenuItem(
         Spacer(modifier = Modifier.width(16.dp))
         
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-            Text(text = subtitle, fontSize = 12.sp, color = Color.Gray)
+            Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+            Text(text = subtitle, fontSize = 12.sp, color = colors.textPrimary.copy(alpha = 0.6f))
         }
         
-        // Custom arrow icon
-        Box(modifier = Modifier.size(24.dp)) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val path = Path().apply {
-                    moveTo(size.width * 0.3f, size.height * 0.3f)
-                    lineTo(size.width * 0.7f, size.height * 0.5f)
-                    lineTo(size.width * 0.3f, size.height * 0.7f)
+        if (trailing != null) {
+            trailing()
+        } else {
+            // Custom arrow icon
+            Box(modifier = Modifier.size(24.dp)) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val path = Path().apply {
+                        moveTo(size.width * 0.3f, size.height * 0.3f)
+                        lineTo(size.width * 0.7f, size.height * 0.5f)
+                        lineTo(size.width * 0.3f, size.height * 0.7f)
+                    }
+                    drawPath(path, color = colors.textPrimary.copy(alpha = 0.3f), style = Stroke(width = 2.dp.toPx()))
                 }
-                drawPath(path, color = Color.LightGray, style = Stroke(width = 2.dp.toPx()))
             }
         }
     }

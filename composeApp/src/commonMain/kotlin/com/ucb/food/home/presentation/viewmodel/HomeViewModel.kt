@@ -64,6 +64,9 @@ class HomeViewModel(
             is HomeEvent.OnRestaurantClick -> {
                 viewModelScope.launch { _effect.send(HomeEffect.NavigateToRestaurantDetail(event.id)) }
             }
+            HomeEvent.OnLogoClick -> {
+                viewModelScope.launch { _effect.send(HomeEffect.NavigateToDesignSystem) }
+            }
         }
     }
 

@@ -18,11 +18,14 @@ import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
+import com.example.designsystem.theme.AppTheme
+
 @Composable
 fun BottomNavigationBar(
     currentRoute: NavRoute?,
     onNavigate: (NavRoute) -> Unit
 ) {
+    val colors = AppTheme.colors
     // Definimos las rutas principales donde se debe mostrar la barra
     val mainRoutes = listOf(NavRoute.Home, NavRoute.MyReviews, NavRoute.Profile)
     
@@ -31,7 +34,7 @@ fun BottomNavigationBar(
     if (currentRoute !in mainRoutes) return
 
     Surface(
-        color = Color.White,
+        color = colors.background,
         tonalElevation = 8.dp,
         shadowElevation = 16.dp,
         modifier = Modifier.fillMaxWidth()
@@ -78,7 +81,8 @@ fun BottomNavItem(
     onClick: () -> Unit,
     icon: @Composable (Color) -> Unit
 ) {
-    val color = if (isSelected) Color(0xFF8B6B11) else Color.Gray
+    val colors = AppTheme.colors
+    val color = if (isSelected) colors.primary else colors.textPrimary.copy(alpha = 0.6f)
     Column(
         modifier = Modifier
             .clickable { onClick() }

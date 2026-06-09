@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.designsystem.theme.AppTheme
+import com.example.designsystem.components.divider.HorizontalDivider
 import com.ucb.food.home.presentation.state.HomeEffect
 import com.ucb.food.home.presentation.state.HomeEvent
 import com.ucb.food.home.presentation.viewmodel.HomeViewModel
@@ -43,9 +45,11 @@ fun HomeScreen(
     onNavigateToLogin: () -> Unit = {},
     onNavigateToRestaurantDetail: (String) -> Unit = {},
     onNavigateToExplore: () -> Unit = {},
+    onNavigateToDesignSystem: () -> Unit = {},
     onOpenDrawer: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val colors = AppTheme.colors
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -55,46 +59,47 @@ fun HomeScreen(
                 HomeEffect.NavigateToLogin -> onNavigateToLogin()
                 is HomeEffect.NavigateToRestaurantDetail -> onNavigateToRestaurantDetail(effect.id)
                 HomeEffect.OpenMenu -> onOpenDrawer()
+                HomeEffect.NavigateToDesignSystem -> onNavigateToDesignSystem()
             }
         }
     }
 
     Scaffold(
-        topBar = { HomeTopBar(viewModel) }
+        topBar = { HomeTopBar(viewModel) },
+        containerColor = colors.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFFAFAFA)),
+                .background(colors.background),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            // Buscador (Lupita) con sugerencias desplegables
             item {
                 Column(modifier = Modifier.padding(horizontal = 16.dp).zIndex(1f)) {
                     var isExpanded by remember { mutableStateOf(false) }
-                    
+
                     OutlinedTextField(
                         value = state.searchQuery,
-                        onValueChange = { 
+                        onValueChange = {
                             viewModel.onEvent(HomeEvent.OnSearchQueryChanged(it))
                             isExpanded = it.isNotBlank()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 12.dp),
-                        placeholder = { Text(stringResource(Res.string.home_search_placeholder)) },
+                        placeholder = { Text(stringResource(Res.string.home_search_placeholder), color = colors.textPrimary.copy(alpha = 0.6f)) },
                         leadingIcon = {
                             Box(modifier = Modifier.size(24.dp)) {
                                 Canvas(modifier = Modifier.fillMaxSize()) {
                                     drawCircle(
-                                        color = Color(0xFFA67C00),
+                                        color = colors.primary,
                                         radius = size.minDimension / 3,
                                         center = Offset(size.width * 0.4f, size.height * 0.4f),
                                         style = Stroke(width = 2.dp.toPx())
                                     )
                                     drawLine(
-                                        color = Color(0xFFA67C00),
+                                        color = colors.primary,
                                         start = Offset(size.width * 0.6f, size.height * 0.6f),
                                         end = Offset(size.width * 0.9f, size.height * 0.9f),
                                         strokeWidth = 2.dp.toPx()
@@ -104,13 +109,17 @@ fun HomeScreen(
                         },
                         shape = RoundedCornerShape(16.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFA67C00),
-                            unfocusedBorderColor = Color.LightGray
+                            focusedBorderColor = colors.primary,
+                            unfocusedBorderColor = colors.textPrimary.copy(alpha = 0.2f),
+                            focusedTextColor = colors.textPrimary,
+                            unfocusedTextColor = colors.textPrimary,
+                            cursorColor = colors.primary,
+                            focusedContainerColor = colors.surface,
+                            unfocusedContainerColor = colors.surface
                         ),
                         singleLine = true
                     )
 
-                    // Lista desplegable de resultados (Profesional)
                     if (isExpanded && state.filteredRestaurants.isNotEmpty()) {
                         Card(
                             modifier = Modifier
@@ -118,16 +127,18 @@ fun HomeScreen(
                                 .heightIn(max = 250.dp),
                             shape = RoundedCornerShape(12.dp),
                             elevation = CardDefaults.cardElevation(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                            colors = CardDefaults.cardColors(containerColor = colors.surface)
                         ) {
-                            LazyColumn {
+                            LazyColumn(
+                                modifier = Modifier.background(colors.surface)
+                            ) {
                                 items(state.filteredRestaurants) { restaurant ->
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .clickable { 
+                                            .clickable {
                                                 isExpanded = false
-                                                viewModel.onEvent(HomeEvent.OnRestaurantClick(restaurant.id))
+                                                viewModel.onEvent(HomeEvent.OnRestaurantClick(restaurant.id))   
                                             }
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
@@ -139,11 +150,11 @@ fun HomeScreen(
                                             contentScale = ContentScale.Crop
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
-                                        Text(text = restaurant.name, fontWeight = FontWeight.SemiBold)
+                                        Text(text = restaurant.name, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
                                         Spacer(modifier = Modifier.weight(1f))
-                                        Text(text = "★ ${restaurant.overallRating}", fontSize = 12.sp, color = Color(0xFFA67C00))
+                                        Text(text = "? ${restaurant.overallRating}", fontSize = 12.sp, color = colors.primary)
                                     }
-                                    HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.5f))
+                                    HorizontalDivider(thickness = 0.5.dp)
                                 }
                             }
                         }
@@ -152,16 +163,15 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(4.dp))
             }
 
-            // SECCIÓN 1: Hot Deals (Banner dinámico)
             item {
                 Text(
                     text = stringResource(Res.string.home_hot_deals),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = colors.textPrimary,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
-                
+
                 if (state.hotDeals.isEmpty()) {
                     Image(
                         painter = painterResource(Res.drawable.paraHotDeals),
@@ -195,7 +205,6 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
-            // SECCIÓN 2: Explore Restaurants (Carrusel Horizontal)
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -206,52 +215,51 @@ fun HomeScreen(
                         text = stringResource(Res.string.home_explore_places),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = colors.textPrimary
                     )
                     Text(
                         text = stringResource(Res.string.home_view_all),
                         fontSize = 14.sp,
-                        color = Color(0xFFA67C00),
+                        color = colors.primary,
                         modifier = Modifier.clickable { onNavigateToExplore() }
                     )
                 }
-                
+
                 if (state.isLoading) {
                     Box(modifier = Modifier.fillMaxWidth().height(150.dp), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = Color(0xFFA67C00))
+                        CircularProgressIndicator(color = colors.primary)
                     }
                 } else {
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(state.restaurants) { restaurant -> // Usamos la lista completa original
+                        items(state.restaurants) { restaurant -> 
                             RestaurantHorizontalCard(
                                 restaurant = restaurant,
-                                onClick = { viewModel.onEvent(HomeEvent.OnRestaurantClick(restaurant.id)) }
+                                onClick = { viewModel.onEvent(HomeEvent.OnRestaurantClick(restaurant.id)) }     
                             )
                         }
                     }
                 }
             }
 
-            // SECCIÓN 3: Top Ranking (Los más votados)
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(Res.string.home_top_ranking),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = colors.textPrimary,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Text(
                     text = stringResource(Res.string.home_community_favorites),
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = colors.textPrimary.copy(alpha = 0.6f),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                
+
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -265,7 +273,6 @@ fun HomeScreen(
                 }
             }
 
-            // Banner Inferior decorativo
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Image(
@@ -285,12 +292,13 @@ fun HomeScreen(
 
 @Composable
 fun RestaurantHorizontalCard(restaurant: RestaurantModel, onClick: () -> Unit) {
+    val colors = AppTheme.colors
     Card(
         modifier = Modifier
             .width(160.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = colors.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -309,11 +317,11 @@ fun RestaurantHorizontalCard(restaurant: RestaurantModel, onClick: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 maxLines = 1,
-                color = Color.Black
+                color = colors.textPrimary
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "★", color = Color(0xFFA67C00), fontSize = 12.sp)
-                Text(text = " ${restaurant.overallRating}", fontSize = 12.sp, color = Color.Gray)
+                Text(text = "?", color = colors.primary, fontSize = 12.sp)
+                Text(text = " ${restaurant.overallRating}", fontSize = 12.sp, color = colors.textPrimary.copy(alpha = 0.6f))
             }
         }
     }
@@ -321,12 +329,13 @@ fun RestaurantHorizontalCard(restaurant: RestaurantModel, onClick: () -> Unit) {
 
 @Composable
 fun RestaurantRankingCard(restaurant: RestaurantModel, onClick: () -> Unit) {
+    val colors = AppTheme.colors
     Card(
         modifier = Modifier
             .width(280.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = colors.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -346,11 +355,12 @@ fun RestaurantRankingCard(restaurant: RestaurantModel, onClick: () -> Unit) {
                 Text(
                     text = restaurant.name,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    color = colors.textPrimary
                 )
                 Text(
                     text = stringResource(Res.string.home_score, restaurant.overallRating),
-                    color = Color(0xFF2E7D32),
+                    color = colors.primary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -361,6 +371,7 @@ fun RestaurantRankingCard(restaurant: RestaurantModel, onClick: () -> Unit) {
 
 @Composable
 fun HomeTopBar(viewModel: HomeViewModel) {
+    val colors = AppTheme.colors
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -375,9 +386,9 @@ fun HomeTopBar(viewModel: HomeViewModel) {
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val strokeWidth = 2.dp.toPx()
-                drawLine(Color(0xFFA67C00), start = Offset(0f, size.height * 0.2f), end = Offset(size.width, size.height * 0.2f), strokeWidth = strokeWidth)
-                drawLine(Color(0xFFA67C00), start = Offset(0f, size.height * 0.5f), end = Offset(size.width, size.height * 0.5f), strokeWidth = strokeWidth)
-                drawLine(Color(0xFFA67C00), start = Offset(0f, size.height * 0.8f), end = Offset(size.width, size.height * 0.8f), strokeWidth = strokeWidth)
+                drawLine(colors.primary, start = Offset(0f, size.height * 0.2f), end = Offset(size.width, size.height * 0.2f), strokeWidth = strokeWidth)
+                drawLine(colors.primary, start = Offset(0f, size.height * 0.5f), end = Offset(size.width, size.height * 0.5f), strokeWidth = strokeWidth)
+                drawLine(colors.primary, start = Offset(0f, size.height * 0.8f), end = Offset(size.width, size.height * 0.8f), strokeWidth = strokeWidth)
             }
         }
 
@@ -385,7 +396,8 @@ fun HomeTopBar(viewModel: HomeViewModel) {
             text = stringResource(Res.string.app_name),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFA67C00)
+            color = colors.primary,
+            modifier = Modifier.clickable { viewModel.onEvent(HomeEvent.OnLogoClick) }
         )
 
         Box(
@@ -394,13 +406,13 @@ fun HomeTopBar(viewModel: HomeViewModel) {
                 .clickable { viewModel.onEvent(HomeEvent.OnProfileClick) }
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
-                drawCircle(color = Color(0xFFA67C00), radius = size.minDimension / 2, style = Stroke(width = 2.dp.toPx()))
-                drawCircle(color = Color(0xFFA67C00), radius = size.minDimension / 4, center = Offset(size.width / 2, size.height * 0.4f))
+                drawCircle(color = colors.primary, radius = size.minDimension / 2, style = Stroke(width = 2.dp.toPx()))
+                drawCircle(color = colors.primary, radius = size.minDimension / 4, center = Offset(size.width / 2, size.height * 0.4f))
                 val path = Path().apply {
                     moveTo(size.width * 0.25f, size.height * 0.85f)
-                    quadraticTo(size.width / 2, size.height * 0.6f, size.width * 0.75f, size.height * 0.85f)
+                    quadraticTo(size.width / 2, size.height * 0.6f, size.width * 0.75f, size.height * 0.85f)    
                 }
-                drawPath(path, color = Color(0xFFA67C00), style = Stroke(width = 2.dp.toPx()))
+                drawPath(path, color = colors.primary, style = Stroke(width = 2.dp.toPx()))
             }
         }
     }

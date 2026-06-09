@@ -8,5 +8,6 @@ data class ProfileUiState(
     val user: UserProfileModel? = null,
     val reviewCount: Int = 0,
     val reviews: List<ReviewModel> = emptyList(),
+    val isDarkMode: Boolean = false,
     val error: String? = null
 )

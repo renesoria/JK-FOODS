@@ -18,16 +18,19 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ucb.food.movie.domain.model.MovieModel
 
+import com.example.designsystem.theme.AppTheme
+
 @Composable
 fun CardMovie(model: MovieModel) {
 
-    val colors = MaterialTheme.colorScheme
+    val colors = AppTheme.colors
 
     Card(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(6.dp)
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(containerColor = colors.background)
     ) {
         Column {
 
@@ -45,10 +48,11 @@ fun CardMovie(model: MovieModel) {
             ) {
                 Text(
                     text = model.title,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = AppTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    color = colors.textPrimary
                 )
             }
         }

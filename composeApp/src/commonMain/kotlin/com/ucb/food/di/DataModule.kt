@@ -20,6 +20,8 @@ import com.ucb.food.onboarding.data.repository.OnboardingRepositoryImpl
 import com.ucb.food.onboarding.domain.repository.OnboardingRepository
 import com.ucb.food.restaurant.data.repository.RestaurantRepositoryImpl
 import com.ucb.food.restaurant.domain.repository.RestaurantRepository
+import com.ucb.food.core.domain.repository.ThemeRepository
+import com.ucb.food.core.data.repository.ThemeRepositoryImpl
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.ObservableSettings
 import io.ktor.client.HttpClient
@@ -61,6 +63,9 @@ val dataModule = module {
     singleOf(::StoreRepositoryImpl).bind<StoreRepository>()
 
     singleOf(::OnboardingRepositoryImpl).bind<OnboardingRepository>()
+
+    // Theme
+    singleOf(::ThemeRepositoryImpl).bind<ThemeRepository>()
 
     // Restaurant
     single { RestaurantRepositoryImpl(get()) }.bind<RestaurantRepository>()

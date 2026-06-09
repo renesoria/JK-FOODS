@@ -31,6 +31,7 @@ import com.ucb.food.restaurant.presentation.screen.RestaurantDetailScreen
 import com.ucb.food.restaurant.presentation.screen.AddReviewScreen
 import com.ucb.food.restaurant.presentation.screen.ExploreRestaurantsScreen
 import com.ucb.food.profile.presentation.screen.MyReviewsScreen
+import com.ucb.food.core.presentation.screen.DesignSystemScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -168,6 +169,9 @@ fun AppNavHost(
                                 onNavigateToExplore = {
                                     navController.navigate(NavRoute.Explore)
                                 },
+                                onNavigateToDesignSystem = {
+                                    navController.navigate(NavRoute.DesignSystem)
+                                },
                                 onOpenDrawer = {
                                     scope.launch { drawerState.open() }
                                 }
@@ -205,6 +209,12 @@ fun AppNavHost(
                                 onNavigateToDetail = { id ->
                                     navController.navigate(NavRoute.RestaurantDetail(id))
                                 }
+                            )
+                        }
+
+                        composable<NavRoute.DesignSystem> {
+                            DesignSystemScreen(
+                                onNavigateBack = { navController.popBackStack() }
                             )
                         }
                     }

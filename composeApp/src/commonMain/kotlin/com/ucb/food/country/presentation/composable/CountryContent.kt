@@ -9,17 +9,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ucb.food.country.model.CountryModel
 
+import com.example.designsystem.theme.AppTheme
+import androidx.compose.foundation.background
+
 @Composable
-fun CountryContent(stores: List<CountryModel>) {
+fun CountryContent(countries: List<CountryModel>) {
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxSize()
+            .background(AppTheme.colors.surface)
             .padding(16.dp)
     ) {
-        items(stores.size) {
-            CountryCard(stores[it])
+        items(countries.size) {
+            CountryCard(countries[it])
         }
 
     }

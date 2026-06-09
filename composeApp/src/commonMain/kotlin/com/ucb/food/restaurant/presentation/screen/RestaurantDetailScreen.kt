@@ -31,6 +31,7 @@ import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.example.designsystem.components.divider.HorizontalDivider
 
 @Composable
 fun RestaurantDetailScreen(
@@ -49,7 +50,7 @@ fun RestaurantDetailScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 RestaurantDetailEffect.NavigateBack -> onNavigateBack()
-                is RestaurantDetailEffect.NavigateToAddReview -> onNavigateToAddReview(effect.restaurantId)
+                is RestaurantDetailEffect.NavigateToAddReview -> onNavigateToAddReview(effect.restaurantId)     
             }
         }
     }
@@ -73,7 +74,6 @@ fun RestaurantDetailScreen(
             }
         } else {
             Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
-                // Círculos amarillos decorativos de fondo
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     drawCircle(
                         color = Color(0xFFFFF1A1).copy(alpha = 0.5f),
@@ -98,7 +98,6 @@ fun RestaurantDetailScreen(
                         .padding(padding),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Toolbar con botón atrás y Título
                     item {
                         Row(
                             modifier = Modifier
@@ -122,9 +121,9 @@ fun RestaurantDetailScreen(
                                     drawPath(path, color = Color(0xFF8B6B11), style = Stroke(width = 2.dp.toPx()))
                                 }
                             }
-                            
+
                             Spacer(modifier = Modifier.width(16.dp))
-                            
+
                             Text(
                                 text = state.restaurant?.name ?: stringResource(Res.string.restaurant_fallback_name),
                                 fontSize = 28.sp,
@@ -134,7 +133,6 @@ fun RestaurantDetailScreen(
                         }
                     }
 
-                    // Logo centrado (Cuadrado)
                     item {
                         Card(
                             modifier = Modifier
@@ -153,12 +151,10 @@ fun RestaurantDetailScreen(
                         Spacer(modifier = Modifier.height(32.dp))
                     }
 
-                    // Lista de platos (Diseño Menu_List)
                     items(state.menu) { dish ->
                         DishListItem(dish)
                     }
 
-                    // Sección de Reviews
                     item {
                         Spacer(modifier = Modifier.height(32.dp))
                         Text(
@@ -214,15 +210,15 @@ fun ReviewListItem(review: ReviewModel) {
                     Row {
                         (1..5).forEach { index ->
                             Text(
-                                text = "★",
+                                text = "?",
                                 fontSize = 14.sp,
-                                color = if (index <= review.rating) Color(0xFFF0D680) else Color.LightGray
+                                color = if (index <= review.rating) Color(0xFFF0D680) else Color.LightGray      
                             )
                         }
                     }
                 }
             }
-            
+
             if (review.comment.isNotBlank()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = review.comment, fontSize = 14.sp, color = Color.DarkGray)
@@ -240,8 +236,7 @@ fun ReviewListItem(review: ReviewModel) {
                     contentScale = ContentScale.Crop
                 )
             }
-            
-            // Chips de atributos marcados (Solo los que son true)
+
             FlowRow(
                 modifier = Modifier.padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -279,7 +274,6 @@ fun DishListItem(dish: DishModel) {
             .padding(horizontal = 24.dp, vertical = 12.dp),
         verticalAlignment = Alignment.Top
     ) {
-        // Imagen del plato a la izquierda
         AsyncImage(
             model = dish.imageUrl,
             contentDescription = null,
@@ -288,10 +282,9 @@ fun DishListItem(dish: DishModel) {
                 .clip(RoundedCornerShape(4.dp)),
             contentScale = ContentScale.Crop
         )
-        
+
         Spacer(modifier = Modifier.width(16.dp))
-        
-        // Texto del plato a la derecha
+
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = dish.name,
@@ -301,7 +294,7 @@ fun DishListItem(dish: DishModel) {
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Especialidad de la casa", // Usamos placeholder ya que el modelo no tiene descripción
+                text = "Especialidad de la casa", 
                 fontSize = 12.sp,
                 color = Color.Gray,
                 lineHeight = 16.sp
