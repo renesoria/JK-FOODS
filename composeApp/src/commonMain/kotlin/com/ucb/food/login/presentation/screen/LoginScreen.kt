@@ -21,6 +21,7 @@ import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.example.designsystem.theme.AppTheme
 
 @Composable
 fun LoginScreen(
@@ -31,6 +32,7 @@ fun LoginScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val colors = AppTheme.colors
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -46,6 +48,7 @@ fun LoginScreen(
     }
 
     Scaffold(
+        containerColor = colors.background,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
@@ -74,7 +77,7 @@ fun LoginScreen(
                         }
                         drawPath(
                             path = path,
-                            color = Color(0xFFA67C00),
+                            color = colors.primary,
                             style = Stroke(width = 2.dp.toPx())
                         )
                     }
@@ -86,7 +89,7 @@ fun LoginScreen(
                     text = stringResource(Res.string.login_title),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFFA67C00)
+                    color = colors.primary
                 )
             }
 
@@ -95,14 +98,16 @@ fun LoginScreen(
             OutlinedTextField(
                 value = state.email,
                 onValueChange = { viewModel.onEvent(LoginEvent.OnEmailChange(it)) },
-                placeholder = { Text(stringResource(Res.string.login_email_placeholder)) },
+                placeholder = { Text(stringResource(Res.string.login_email_placeholder), color = colors.textSecondary) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 isError = state.emailError != null,
                 supportingText = { state.emailError?.let { Text(it) } },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFFA67C00),
-                    unfocusedBorderColor = Color.LightGray
+                    focusedBorderColor = colors.primary,
+                    unfocusedBorderColor = colors.textSecondary.copy(alpha = 0.5f),
+                    focusedTextColor = colors.textPrimary,
+                    unfocusedTextColor = colors.textPrimary
                 )
             )
 
@@ -111,14 +116,16 @@ fun LoginScreen(
             OutlinedTextField(
                 value = state.password,
                 onValueChange = { viewModel.onEvent(LoginEvent.OnPasswordChange(it)) },
-                placeholder = { Text(stringResource(Res.string.login_password_placeholder)) },
+                placeholder = { Text(stringResource(Res.string.login_password_placeholder), color = colors.textSecondary) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 isError = state.passwordError != null,
                 supportingText = { state.passwordError?.let { Text(it) } },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFFA67C00),
-                    unfocusedBorderColor = Color.LightGray
+                    focusedBorderColor = colors.primary,
+                    unfocusedBorderColor = colors.textSecondary.copy(alpha = 0.5f),
+                    focusedTextColor = colors.textPrimary,
+                    unfocusedTextColor = colors.textPrimary
                 )
             )
 
@@ -131,7 +138,7 @@ fun LoginScreen(
                     .height(50.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF7C5D00)
+                    containerColor = colors.primary
                 )
             ) {
                 if (state.isLoading) {
@@ -147,7 +154,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = stringResource(Res.string.login_no_account), color = Color.Gray)
+                Text(text = stringResource(Res.string.login_no_account), color = colors.textSecondary)
                 Text(
                     text = stringResource(Res.string.login_signup_now),
                     color = Color.Red,

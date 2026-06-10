@@ -32,6 +32,7 @@ import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import com.example.designsystem.components.divider.HorizontalDivider
+import com.example.designsystem.theme.AppTheme
 
 @Composable
 fun RestaurantDetailScreen(
@@ -41,6 +42,7 @@ fun RestaurantDetailScreen(
     onNavigateToAddReview: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val colors = AppTheme.colors
 
     LaunchedEffect(restaurantId) {
         viewModel.onEvent(RestaurantDetailEvent.LoadDetails(restaurantId))
@@ -56,37 +58,39 @@ fun RestaurantDetailScreen(
     }
 
     Scaffold(
+        containerColor = colors.background,
         floatingActionButton = {
             Button(
                 onClick = { viewModel.onEvent(RestaurantDetailEvent.OnAddReviewClick) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF0D680)),
+                colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                Text(stringResource(Res.string.restaurant_add_review), color = Color.Black, fontWeight = FontWeight.Bold)
+                Text(stringResource(Res.string.restaurant_add_review), color = Color.White, fontWeight = FontWeight.Bold)
             }
         },
         floatingActionButtonPosition = FabPosition.Center
     ) { padding ->
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Color(0xFFA67C00))
+                CircularProgressIndicator(color = colors.primary)
             }
         } else {
-            Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
+            Box(modifier = Modifier.fillMaxSize().background(colors.background)) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
+                    val circleColor = colors.primary.copy(alpha = 0.1f)
                     drawCircle(
-                        color = Color(0xFFFFF1A1).copy(alpha = 0.5f),
+                        color = circleColor,
                         radius = 120.dp.toPx(),
                         center = center.copy(x = size.width * 0.9f, y = size.height * 0.3f)
                     )
                     drawCircle(
-                        color = Color(0xFFFFF1A1).copy(alpha = 0.5f),
+                        color = circleColor,
                         radius = 100.dp.toPx(),
                         center = center.copy(x = size.width * 0.1f, y = size.height * 0.6f)
                     )
                     drawCircle(
-                        color = Color(0xFFFFF1A1).copy(alpha = 0.5f),
+                        color = circleColor,
                         radius = 80.dp.toPx(),
                         center = center.copy(x = size.width * 0.8f, y = size.height * 0.95f)
                     )
@@ -118,7 +122,7 @@ fun RestaurantDetailScreen(
                                         lineTo(size.width * 0.3f, size.height * 0.5f)
                                         lineTo(size.width * 0.5f, size.height * 0.7f)
                                     }
-                                    drawPath(path, color = Color(0xFF8B6B11), style = Stroke(width = 2.dp.toPx()))
+                                    drawPath(path, color = colors.primary, style = Stroke(width = 2.dp.toPx()))
                                 }
                             }
 
@@ -128,7 +132,7 @@ fun RestaurantDetailScreen(
                                 text = state.restaurant?.name ?: stringResource(Res.string.restaurant_fallback_name),
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF8B6B11)
+                                color = colors.primary
                             )
                         }
                     }
@@ -162,7 +166,8 @@ fun RestaurantDetailScreen(
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-                            textAlign = TextAlign.Start
+                            textAlign = TextAlign.Start,
+                            color = colors.textPrimary
                         )
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp), thickness = 1.dp)
                     }
@@ -171,7 +176,7 @@ fun RestaurantDetailScreen(
                         item {
                             Text(
                                 stringResource(Res.string.restaurant_no_reviews),
-                                color = Color.Gray,
+                                color = colors.textSecondary,
                                 modifier = Modifier.padding(24.dp)
                             )
                         }
@@ -190,12 +195,13 @@ fun RestaurantDetailScreen(
 
 @Composable
 fun ReviewListItem(review: ReviewModel) {
+    val colors = AppTheme.colors
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp, vertical = 12.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
+        colors = CardDefaults.cardColors(containerColor = colors.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -203,16 +209,16 @@ fun ReviewListItem(review: ReviewModel) {
                 ProfileAvatar(base64Image = review.userProfilePicture, size = 40.dp)
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text(text = review.userName, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(text = review.userName, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = colors.textPrimary)
                     if (review.restaurantName.isNotBlank()) {
-                        Text(text = stringResource(Res.string.restaurant_review_at, review.restaurantName), fontSize = 12.sp, color = Color.Gray)
+                        Text(text = stringResource(Res.string.restaurant_review_at, review.restaurantName), fontSize = 12.sp, color = colors.textSecondary)
                     }
                     Row {
                         (1..5).forEach { index ->
                             Text(
                                 text = "★",
                                 fontSize = 14.sp,
-                                color = if (index <= review.rating) Color(0xFFF0D680) else Color.LightGray      
+                                color = if (index <= review.rating) Color(0xFFF0D680) else colors.textSecondary.copy(alpha = 0.4f)      
                             )
                         }
                     }
@@ -221,7 +227,7 @@ fun ReviewListItem(review: ReviewModel) {
 
             if (review.comment.isNotBlank()) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = review.comment, fontSize = 14.sp, color = Color.DarkGray)
+                Text(text = review.comment, fontSize = 14.sp, color = colors.textPrimary)
             }
 
             if (review.photoUrl != null) {
@@ -252,15 +258,16 @@ fun ReviewListItem(review: ReviewModel) {
 
 @Composable
 fun TinyTag(text: String) {
+    val colors = AppTheme.colors
     Surface(
-        color = Color(0xFF2E7D32).copy(alpha = 0.1f),
+        color = colors.primary.copy(alpha = 0.1f),
         shape = RoundedCornerShape(8.dp)
     ) {
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             fontSize = 10.sp,
-            color = Color(0xFF2E7D32),
+            color = colors.primary,
             fontWeight = FontWeight.Bold
         )
     }
@@ -268,6 +275,7 @@ fun TinyTag(text: String) {
 
 @Composable
 fun DishListItem(dish: DishModel) {
+    val colors = AppTheme.colors
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -290,20 +298,20 @@ fun DishListItem(dish: DishModel) {
                 text = dish.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp,
-                color = Color.Black
+                color = colors.textPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Especialidad de la casa", 
                 fontSize = 12.sp,
-                color = Color.Gray,
+                color = colors.textSecondary,
                 lineHeight = 16.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "${dish.price} Bs.",
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF8B6B11),
+                color = colors.primary,
                 fontSize = 14.sp
             )
         }
