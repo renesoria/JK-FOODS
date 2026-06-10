@@ -27,10 +27,9 @@ fun BottomNavigationBar(
 ) {
     val colors = AppTheme.colors
     // Definimos las rutas principales donde se debe mostrar la barra
-    val mainRoutes = listOf(NavRoute.Home, NavRoute.MyReviews, NavRoute.Profile)
+    val mainRoutes = listOf(NavRoute.Home, NavRoute.Map, NavRoute.MyReviews, NavRoute.Profile)
     
     // Si la ruta actual no es una de las principales, no mostramos la barra
-    // (Por ejemplo, no queremos verla en el Login o en la pantalla de añadir review)
     if (currentRoute !in mainRoutes) return
 
     Surface(
@@ -54,8 +53,8 @@ fun BottomNavigationBar(
             )
             BottomNavItem(
                 label = stringResource(Res.string.nav_map),
-                isSelected = false, 
-                onClick = { /* TODO */ },
+                isSelected = currentRoute is NavRoute.Map, 
+                onClick = { onNavigate(NavRoute.Map) },
                 icon = { MapIcon(it) }
             )
             BottomNavItem(

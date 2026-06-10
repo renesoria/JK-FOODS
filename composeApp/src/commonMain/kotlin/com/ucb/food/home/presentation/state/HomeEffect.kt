@@ -7,4 +7,5 @@ sealed interface HomeEffect {
     data object NavigateToLogin : HomeEffect
     data class NavigateToRestaurantDetail(val id: String) : HomeEffect
     data object NavigateToDesignSystem : HomeEffect
+    data object NavigateToMap : HomeEffect
 }

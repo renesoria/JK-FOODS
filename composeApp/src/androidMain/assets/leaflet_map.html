@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="./leaflet/leaflet.css" />
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100vh;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .custom-div-icon {
+            background: none;
+            border: none;
+        }
+
+        .leaflet-container img.leaflet-tile {
+            mix-blend-mode: normal !important;
+        }
+
+        /* Estilos para el Popup con Rating de Estrellas */
+        .popup-content {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            min-width: 140px;
+            padding: 5px;
+        }
+
+        .popup-content b {
+            font-size: 15px;
+            color: #333;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .popup-content .rating {
+            color: #FFB400; /* Color dorado JK Foods */
+            font-weight: bold;
+            font-size: 14px;
+            margin: 2px 0 6px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .popup-content small {
+            color: #777;
+            display: block;
+            font-size: 12px;
+            line-height: 1.2;
+            border-top: 1px solid #eee;
+            padding-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script src="./leaflet/leaflet.js"></script>
+
+<script>
+    var map;
+    var markers = [];
+    var pendingData = null;
+
+    window.setRestaurants = function (restaurantsJson) {
+        console.log("JS: setRestaurants llamado");
+
+        if (!map) {
+            console.log("JS: mapa todavía no listo");
+            pendingData = restaurantsJson;
+            return;
+        }
+
+        markers.forEach(function (marker) {
+            map.removeLayer(marker);
+        });
+
+        markers = [];
+
+        try {
+            var restaurants = JSON.parse(restaurantsJson);
+
+            restaurants.forEach(function (restaurant) {
+                restaurant.branches.forEach(function (branch) {
+                    var icon = L.divIcon({
+                        className: "custom-div-icon",
+                        html:
+                            "<div style='" +
+                            "background-color:white;" +
+                            "border-radius:50%;" +
+                            "width:42px;" +
+                            "height:42px;" +
+                            "display:flex;" +
+                            "align-items:center;" +
+                            "justify-content:center;" +
+                            "border:2px solid #FF5A5F;" +
+                            "box-shadow:0 2px 6px rgba(0,0,0,0.3);" +
+                            "'>" +
+                            "<img src='" + restaurant.logoUrl + "' " +
+                            "style='" +
+                            "width:34px;" +
+                            "height:34px;" +
+                            "border-radius:50%;" +
+                            "object-fit:cover;" +
+                            "' onerror=\"this.src='https://via.placeholder.com/34'\">" +
+                            "</div>",
+                        iconSize: [42, 42],
+                        iconAnchor: [21, 42]
+                    });
+
+                    // Obtenemos el rating del restaurante
+                    var ratingValue = (restaurant.overallRating || 0).toFixed(1);
+
+                    var marker = L.marker(
+                        [branch.latitude, branch.longitude],
+                        { icon: icon }
+                    )
+                        .addTo(map)
+                        .bindPopup(
+                            "<div class='popup-content'>" +
+                            "<b>" + restaurant.name + "</b>" +
+                            "<div class='rating'>⭐ " + ratingValue + "</div>" +
+                            "<small>" + branch.address + "</small>" +
+                            "</div>"
+                        );
+
+                    markers.push(marker);
+                });
+            });
+
+            console.log("JS: marcadores cargados: " + markers.length);
+        } catch (error) {
+            console.error("JS: error cargando restaurantes", error);
+        }
+    };
+
+    function initMap() {
+        console.log("JS: iniciando mapa");
+
+        if (typeof L === "undefined") {
+            console.error("JS: Leaflet no está disponible");
+            return;
+        }
+
+        // Coordenadas centrales por defecto
+        map = L.map("map").setView([-17.3935, -66.1570], 13);
+
+        L.tileLayer(
+            "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap'
+            }
+        ).addTo(map);
+
+        var mapElement = document.getElementById("map");
+
+        const observer = new ResizeObserver(() => {
+            if (map) {
+                map.invalidateSize();
+            }
+        });
+        observer.observe(mapElement);
+
+        setTimeout(function () {
+            map.invalidateSize();
+            console.log("JS: mapa listo");
+
+            if (window.AndroidBridge && window.AndroidBridge.onMapReady) {
+                window.AndroidBridge.onMapReady();
+            }
+
+            if (pendingData) {
+                window.setRestaurants(pendingData);
+                pendingData = null;
+            }
+        }, 300);
+    }
+
+    initMap();
+</script>
+</body>
+</html>

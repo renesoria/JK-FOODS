@@ -20,6 +20,7 @@ import com.ucb.food.restaurant.presentation.viewmodel.RestaurantDetailViewModel
 import com.ucb.food.restaurant.presentation.viewmodel.AddReviewViewModel
 import com.ucb.food.core.presentation.viewmodel.ThemeViewModel
 import com.ucb.food.navigation.NavigationViewModel
+import com.ucb.food.map.presentation.viewmodel.MapViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -44,4 +45,5 @@ val presentationModule = module {
     viewModelOf(::ProfileEditViewModel)
     viewModelOf(::RestaurantDetailViewModel)
     viewModelOf(::AddReviewViewModel)
+    viewModelOf(::MapViewModel)
 }
