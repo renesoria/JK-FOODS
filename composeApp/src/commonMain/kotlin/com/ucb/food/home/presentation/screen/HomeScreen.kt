@@ -36,6 +36,7 @@ import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.round
 
 @Composable
 fun HomeScreen(
@@ -152,7 +153,12 @@ fun HomeScreen(
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Text(text = restaurant.name, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
                                         Spacer(modifier = Modifier.weight(1f))
+<<<<<<< Updated upstream
                                         Text(text = "? ${restaurant.overallRating}", fontSize = 12.sp, color = colors.primary)
+=======
+                                        val formattedRating = round(restaurant.overallRating * 10) / 10.0
+                                        Text(text = "⭐ $formattedRating", fontSize = 12.sp, color = colors.primary)
+>>>>>>> Stashed changes
                                     }
                                     HorizontalDivider(thickness = 0.5.dp)
                                 }
@@ -320,8 +326,14 @@ fun RestaurantHorizontalCard(restaurant: RestaurantModel, onClick: () -> Unit) {
                 color = colors.textPrimary
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
+<<<<<<< Updated upstream
                 Text(text = "?", color = colors.primary, fontSize = 12.sp)
                 Text(text = " ${restaurant.overallRating}", fontSize = 12.sp, color = colors.textPrimary.copy(alpha = 0.6f))
+=======
+                Text(text = "⭐", color = colors.primary, fontSize = 12.sp)
+                val formattedRating = round(restaurant.overallRating * 10) / 10.0
+                Text(text = " $formattedRating", fontSize = 12.sp, color = colors.textPrimary.copy(alpha = 0.6f))
+>>>>>>> Stashed changes
             }
         }
     }
@@ -358,8 +370,9 @@ fun RestaurantRankingCard(restaurant: RestaurantModel, onClick: () -> Unit) {
                     fontSize = 16.sp,
                     color = colors.textPrimary
                 )
+                val formattedRating = round(restaurant.overallRating * 10) / 10.0
                 Text(
-                    text = stringResource(Res.string.home_score, restaurant.overallRating),
+                    text = stringResource(Res.string.home_score, formattedRating.toString()),
                     color = colors.primary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold

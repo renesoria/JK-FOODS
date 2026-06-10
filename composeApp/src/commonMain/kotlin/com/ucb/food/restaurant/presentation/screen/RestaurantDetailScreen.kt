@@ -210,7 +210,7 @@ fun ReviewListItem(review: ReviewModel) {
                     Row {
                         (1..5).forEach { index ->
                             Text(
-                                text = "?",
+                                text = "★",
                                 fontSize = 14.sp,
                                 color = if (index <= review.rating) Color(0xFFF0D680) else Color.LightGray      
                             )

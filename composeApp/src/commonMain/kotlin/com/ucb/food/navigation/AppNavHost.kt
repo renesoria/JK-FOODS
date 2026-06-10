@@ -49,11 +49,43 @@ fun AppNavHost(
 
     if (startDestination == null) return
 
+<<<<<<< Updated upstream
     startDestination?.let { destination ->
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
                 NavDrawerContent(
+=======
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = currentDestination?.route?.contains("Map") != true,
+        drawerContent = {
+            NavDrawerContent(
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        popUpTo(NavRoute.Home) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onCloseDrawer = { scope.launch { drawerState.close() } }
+            )
+        }
+    ) {
+        Scaffold(
+            bottomBar = {
+                val currentRoute = when {
+                    currentDestination?.route?.contains("Home") == true -> NavRoute.Home
+                    currentDestination?.route?.contains("Map") == true -> NavRoute.Map
+                    currentDestination?.route?.contains("Profile") == true -> NavRoute.Profile
+                    currentDestination?.route?.contains("MyReviews") == true -> NavRoute.MyReviews
+                    currentDestination?.route?.contains("Explore") == true -> NavRoute.Explore
+                    else -> null
+                }
+                
+                BottomNavigationBar(
+                    currentRoute = currentRoute,
+>>>>>>> Stashed changes
                     onNavigate = { route ->
                         navController.navigate(route) {
                             popUpTo(NavRoute.Home) { saveState = true }
