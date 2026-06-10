@@ -1,57 +1,293 @@
 package com.ucb.food.signin.presentation.screen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.ucb.food.signin.presentation.state.SigninEffect
 import com.ucb.food.signin.presentation.state.SigninEvent
 import com.ucb.food.signin.presentation.viewmodel.SigninViewModel
 import kotlinproject.composeapp.generated.resources.Res
-import kotlinproject.composeapp.generated.resources.sign_in_btn
-import kotlinproject.composeapp.generated.resources.sign_in_email
-import kotlinproject.composeapp.generated.resources.sign_in_password
-import kotlinproject.composeapp.generated.resources.sign_in_title
+import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SigninScreen(viewModel: SigninViewModel = koinViewModel()) {
+fun SigninScreen(
+    viewModel: SigninViewModel = koinViewModel(),
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {},
+    onNavigateBack: () -> Unit = {}
+) {
+    val state by viewModel.state.collectAsState()
+    val scrollState = rememberScrollState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("")}
-    Column {
-        Text(stringResource(Res.string.sign_in_title))
-        TextField(
-            onValueChange = {
-                email = it
-                viewModel.onEvent(SigninEvent.OnEmailChanged(it))
-            },
-            value = email,
-            label = {
-                Text(stringResource(Res.string.sign_in_email))
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                SigninEffect.NavigateBack -> onNavigateBack()
+                SigninEffect.NavigateToLogin -> onNavigateToLogin()
+                SigninEffect.SignUpSuccess -> {
+                    onNavigateToHome()
+                }
+                is SigninEffect.ShowError -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
             }
-        )
-        TextField(
-            onValueChange = {
-                password = it
-                viewModel.onEvent(SigninEvent.OnPasswordChanged(it))
-            },
-            value = password,
-            label = {
-                Text(stringResource(Res.string.sign_in_password))
-            }
-        )
-        Button(
-            onClick = {
-                viewModel.onEvent(SigninEvent.OnClick)
-            }
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.Start
         ) {
-            Text(stringResource(Res.string.sign_in_btn))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { viewModel.onEvent(SigninEvent.OnBackClick) }
+                ) {
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val path = Path().apply {
+                            moveTo(size.width * 0.8f, size.height * 0.5f)
+                            lineTo(size.width * 0.2f, size.height * 0.5f)
+                            moveTo(size.width * 0.4f, size.height * 0.3f)
+                            lineTo(size.width * 0.2f, size.height * 0.5f)
+                            lineTo(size.width * 0.4f, size.height * 0.7f)
+                        }
+                        drawPath(
+                            path = path,
+                            color = Color(0xFFA67C00),
+                            style = Stroke(width = 2.dp.toPx())
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(
+                    text = stringResource(Res.string.signin_title),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFA67C00)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = state.firstName,
+                    onValueChange = { viewModel.onEvent(SigninEvent.OnFirstNameChanged(it)) },
+                    placeholder = { Text(stringResource(Res.string.signin_first_name), fontSize = 12.sp) },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    isError = state.firstNameError != null,
+                    supportingText = { state.firstNameError?.let { Text(it) } },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFFA67C00),
+                        unfocusedBorderColor = Color.LightGray
+                    )
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                OutlinedTextField(
+                    value = state.lastName,
+                    onValueChange = { viewModel.onEvent(SigninEvent.OnLastNameChanged(it)) },
+                    placeholder = { Text(stringResource(Res.string.signin_last_name), fontSize = 12.sp) },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    isError = state.lastNameError != null,
+                    supportingText = { state.lastNameError?.let { Text(it) } },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFFA67C00),
+                        unfocusedBorderColor = Color.LightGray
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = state.mobileNumber,
+                onValueChange = { viewModel.onEvent(SigninEvent.OnMobileNumberChanged(it)) },
+                placeholder = { Text(stringResource(Res.string.signin_mobile_number)) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                isError = state.mobileError != null,
+                supportingText = { state.mobileError?.let { Text(it) } },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA67C00),
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = { viewModel.onEvent(SigninEvent.OnEmailChanged(it)) },
+                placeholder = { Text(stringResource(Res.string.signin_email)) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                isError = state.emailError != null,
+                supportingText = { state.emailError?.let { Text(it) } },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA67C00),
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            var expanded by remember { mutableStateOf(false) }
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = when(state.gender) {
+                        "Male" -> stringResource(Res.string.signin_gender_male)
+                        "Female" -> stringResource(Res.string.signin_gender_female)
+                        else -> state.gender
+                    },
+                    onValueChange = { },
+                    readOnly = true,
+                    placeholder = { Text(stringResource(Res.string.signin_gender_placeholder)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    trailingIcon = {
+                        Canvas(modifier = Modifier.size(12.dp)) {
+                            val path = Path().apply {
+                                moveTo(0f, 0f)
+                                lineTo(size.width, 0f)
+                                lineTo(size.width / 2, size.height)
+                                close()
+                            }
+                            drawPath(path = path, color = Color.Gray)
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color(0xFFA67C00),
+                        unfocusedBorderColor = Color.LightGray
+                    )
+                )
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clickable { expanded = true }
+                )
+                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.signin_gender_male)) },
+                        onClick = {
+                            viewModel.onEvent(SigninEvent.OnGenderChanged("Male"))
+                            expanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(Res.string.signin_gender_female)) },
+                        onClick = {
+                            viewModel.onEvent(SigninEvent.OnGenderChanged("Female"))
+                            expanded = false
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = { viewModel.onEvent(SigninEvent.OnPasswordChanged(it)) },
+                placeholder = { Text(stringResource(Res.string.login_password_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                isError = state.passwordError != null,
+                supportingText = { state.passwordError?.let { Text(it) } },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA67C00),
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = state.address,
+                onValueChange = { viewModel.onEvent(SigninEvent.OnAddressChanged(it)) },
+                placeholder = { Text(stringResource(Res.string.signin_address)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                shape = RoundedCornerShape(12.dp),
+                isError = state.addressError != null,
+                supportingText = { state.addressError?.let { Text(it) } },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFA67C00),
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = { viewModel.onEvent(SigninEvent.OnSignUpClick) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF7C5D00)
+                )
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text(stringResource(Res.string.signin_button), color = Color.White, fontSize = 18.sp)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = stringResource(Res.string.signin_already_account), color = Color.Gray)
+                Text(
+                    text = stringResource(Res.string.signin_login_link),
+                    color = Color.Red,
+                    modifier = Modifier.clickable { viewModel.onEvent(SigninEvent.OnLoginClick) },
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

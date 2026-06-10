@@ -18,15 +18,19 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ucb.food.country.model.CountryModel
 
+import com.example.designsystem.theme.AppTheme
+
 @Composable
 fun CountryCard(country: CountryModel) {
+    val colors = AppTheme.colors
 
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(6.dp)
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(containerColor = colors.background)
     ) {
 
         Column(
@@ -47,7 +51,7 @@ fun CountryCard(country: CountryModel) {
             Text(
                 text = country.region.uppercase(),
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray
+                color = colors.textPrimary.copy(alpha = 0.6f)
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -55,21 +59,24 @@ fun CountryCard(country: CountryModel) {
             Text(
                 text = country.name,
                 style = MaterialTheme.typography.titleMedium,
-                maxLines = 1
+                maxLines = 1,
+                color = colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = "Capital: ${country.capital}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "👥 ${country.population}",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.textPrimary
             )
         }
     }

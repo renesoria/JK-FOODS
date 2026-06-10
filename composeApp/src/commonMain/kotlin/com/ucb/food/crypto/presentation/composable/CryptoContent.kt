@@ -9,6 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ucb.food.crypto.domain.model.CryptoModel
 
+import com.example.designsystem.theme.AppTheme
+import androidx.compose.foundation.background
+
 @Composable
 fun CryptoContent(cryptos: List<CryptoModel>) {
 
@@ -16,6 +19,7 @@ fun CryptoContent(cryptos: List<CryptoModel>) {
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxSize()
+            .background(AppTheme.colors.surface)
             .padding(16.dp)
     ) {
         items(cryptos.size) {

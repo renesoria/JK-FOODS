@@ -17,7 +17,7 @@ plugins {
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
     
@@ -42,10 +42,17 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.work.runtime.ktx)
 
+            implementation("io.sentry:sentry-android:7.13.0")
+            implementation("io.sentry:sentry-compose-android:7.13.0")
+
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.config)
             implementation(libs.firebase.database)
+            implementation("com.google.firebase:firebase-auth")
             implementation(libs.kotlinx.coroutines.play.services)
+            
+            // Necesario para ProcessLifecycleOwner
+            implementation("androidx.lifecycle:lifecycle-process:2.8.7")
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -74,9 +81,18 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
 
+            implementation(libs.firebase.auth.kmp)
+            implementation(libs.firebase.database.kmp)
+
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.no.arg)
+
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(project(":designsystem"))
+            
+            implementation(libs.peekaboo.ui)
+            implementation(libs.peekaboo.image.picker)
         }
 
         iosMain.dependencies {
@@ -110,8 +126,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

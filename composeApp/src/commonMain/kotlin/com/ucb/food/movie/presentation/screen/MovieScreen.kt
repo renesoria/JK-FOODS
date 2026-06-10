@@ -12,10 +12,14 @@ import com.ucb.food.movie.presentation.composable.CardMovie
 import com.ucb.food.movie.presentation.viewmodel.MovieViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
+import com.example.designsystem.theme.AppTheme
+import androidx.compose.foundation.background
+
 @Composable
 fun MovieScreen(viewModel: MovieViewModel = koinViewModel()) {
-
     val state = viewModel.state.collectAsState()
+    val colors = AppTheme.colors
+    
     if(state.value.isLoading) {
         CircularProgressIndicator()
     } else {
@@ -23,7 +27,8 @@ fun MovieScreen(viewModel: MovieViewModel = koinViewModel()) {
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = androidx.compose.ui.Modifier.background(colors.surface)
         ) {
             items(state.value.list.size) {
                 CardMovie( state.value.list[it])

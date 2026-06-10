@@ -1,130 +1,128 @@
-# Project Documentation for AI Agents
+# JK-FOODS Project Architecture & Guidelines (Single Source of Truth)
 
-## Overview
-This is a **Compose Multiplatform** project targeting Android and iOS. It follows a **Clean Architecture** pattern with a strict separation of concerns between Data, Domain, and Presentation layers.
-
-### Key Technologies
-- **Networking:** Ktor Client with Kotlinx Serialization.
-- **Dependency Injection:** Koin.
-- **Image Loading:** Coil3.
-- **State Management:** `StateFlow` and `SharedFlow` within ViewModels.
+## 🏗 Overview
+This is a **Compose Multiplatform** (Android & iOS) project built following **Clean Architecture** principles. The architecture is designed to be scalable, testable, and maintainable by strictly separating concerns into layers.
 
 ---
 
-## Architecture & Module Structure
+## 🏛 Layered Architecture (Radiography)
 
-Every feature module (e.g., `github`, `movie`, `counter`) is organized into the following layers:
+Each feature module (e.g., `movie`, `github`, `login`, `fakestore`) must follow this three-layer structure:
 
 ### 1. Data Layer (`data/`)
-- **`datasource/`**: Interfaces for remote/local data fetching.
-- **`dto/`**: Data Transfer Objects representing the raw API response.
-- **`service/`**: Implementations of the data sources using Ktor.
-- **`repository/`**: Implementation of the domain repository, handles data mapping.
-- **`mapper/`**: Extension functions to convert DTOs to Domain Models.
+**Responsibility**: Managing raw data from external sources (APIs, Databases, Local Storage).
+- **`dto/`**: Data Transfer Objects. Pure data classes annotated with `@Serializable`. They represent the raw structure of the API response.
+- **`service/`**: API definitions and implementations using **Ktor Client**.
+- **`datasource/`**: Interfaces and implementations for low-level data access (Remote vs Local).
+- **`repository/`**: Implementation of the domain-level repository interface. This is the "brain" of the data layer, responsible for:
+    - Coordinating multiple data sources (e.g., Network + Cache).
+    - Error handling (mapping exceptions to domain errors).
+    - Mapping DTOs to Domain Models using **Mappers**.
+- **`mapper/`**: Extension functions that convert `Dto` objects into `Model` (Domain) objects.
 
 ### 2. Domain Layer (`domain/`)
-- **`model/`**: Pure Kotlin data classes used across the app.
-- **`repository/`**: Interfaces defining the data contracts.
-- **`usecase/`**: Business logic units that interact with repositories.
+**Responsibility**: Containing the core business logic. It is the most stable layer and has **NO** dependencies on external frameworks or other layers.
+- **`model/`**: Pure Kotlin data classes representing business entities. No annotations (like `@Serializable`) should be here.
+- **`repository/`**: Interfaces defining the contracts for data access. The implementation resides in the Data layer.
+- **`usecase/`**: Single-responsibility classes that execute a specific piece of business logic. They interact only with repositories.
 
 ### 3. Presentation Layer (`presentation/`)
-- **`screen/`**: Main Composable screens.
-- **`composable/`**: Reusable UI components.
-- **`viewmodel/`**: Lifecycle-aware components managing UI state.
-- **`state/`**: `UiState` (data), `Event` (user actions), and `Effect` (one-time side effects).
+**Responsibility**: Rendering the UI and managing user interaction.
+- **`screen/`**: High-level `@Composable` functions representing full screens. They should not contain logic, only layout and calls to the ViewModel.
+- **`viewmodel/`**: Lifecycle-aware components that hold the UI state and handle user actions. They communicate with the Domain layer via UseCases.
+- **`state/`**: Definitions for UI-specific data structures:
+    - **`UiState`**: A single data class representing the entire screen state.
+    - **`Event`**: A sealed interface/class representing user actions (e.g., button clicks).
+    - **`Effect`**: A sealed interface representing side effects (e.g., navigation, showing a snackbar).
+- **`composable/`**: Small, reusable UI components used within screens.
 
 ---
 
-## API Extraction Patterns
-
-The project demonstrates two common API handling patterns:
-
-### A. Direct Object Extraction (`github` module)
-In the GitHub module, the API returns a single JSON object representing the user.
-- **Endpoint:** `https://api.github.com/users/$nickname`
-- **Pattern:** `response.body<UserDto>()`
-- **Data Flow:** The `GitHubApiService` directly returns the `UserDto` which is then mapped to `GithubModel`.
-
-### B. Wrapped List Extraction (`movie` module)
-In the Movie module, the API returns a wrapper object containing a list of items.
-- **Endpoint:** `https://api.themoviedb.org/3/discover/movie?...`
-- **Pattern:** 
-  1. Receive `MovieResponseDto` (which contains `val results: List<MovieDto>`).
-  2. Extract `body.results`.
-- **Data Flow:** `MovieService` fetches the wrapper, extracts the list, and the `MovieRepositoryImpl` maps each `MovieDto` in the list to a `MovieModel`.
+## 📐 Dependency Rules (The Golden Rule)
+To maintain Clean Architecture, dependencies must flow **inwards**:
+1.  **Domain Layer** is the center. It knows **nothing** about Data or Presentation.
+2.  **Data Layer** depends on the **Domain Layer** (to implement repository interfaces).
+3.  **Presentation Layer** depends on the **Domain Layer** (to use UseCases and Models).
+4.  **Presentation Layer** must **NEVER** depend on the **Data Layer** directly (e.g., no DTOs in ViewModels).
 
 ---
 
-## Real-World Examples (GitHub vs. Movie)
+## 🏷 Naming Conventions
+Consistency is key. Use the following suffixes:
 
-### 1. Data Layer: API Handling & DTOs
+| Component | Suffix | Example |
+| :--- | :--- | :--- |
+| Data Transfer Object | `Dto` | `MovieDto.kt` |
+| Domain Model | `Model` | `MovieModel.kt` |
+| Repository Interface | `Repository` | `MovieRepository.kt` |
+| Repository Impl | `RepositoryImpl` | `MovieRepositoryImpl.kt` |
+| Use Case | `UseCase` | `GetMoviesUseCase.kt` |
+| ViewModel | `ViewModel` | `MovieViewModel.kt` |
+| UI State | `UiState` or `State` | `MovieUiState.kt` |
+| UI Event | `Event` | `MovieEvent.kt` |
+| UI Effect | `Effect` | `MovieEffect.kt` |
+| Mapper File | `...Mapper.kt` | `MovieMapper.kt` |
 
-#### GitHub (Direct Object)
+---
+
+## ⚡ State Management (MVI-ish Pattern)
+
+Every ViewModel must implement the following pattern:
+
+### 1. The State (`UiState`)
+A `data class` representing everything the UI needs. Use `val` for all properties and provide default values.
 ```kotlin
-// github/data/dto/UserDto.kt
-@Serializable
-data class UserDto(
-    val login: String,
-    @SerialName("avatar_url") val avatarUrl: String,
-    val name: String? = null
-)
-
-// github/data/service/GitHubApiService.kt
-override suspend fun getUser(nickname: String): UserDto {
-    val response = client.get("https://api.github.com/users/$nickname")
-    return response.body<UserDto>() // Direct extraction
-}
-```
-
-#### Movie (Wrapped List)
-```kotlin
-// movie/data/dto/MovieResponseDto.kt
-@Serializable
-data class MovieResponseDto(
-    val results: List<MovieDto> // Wrapper for the list
-)
-
-// movie/data/service/MovieService.kt
-override suspend fun getList(): List<MovieDto> {
-    val response = client.get("https://api.themoviedb.org/3/discover/movie?...")
-    val body = response.body<MovieResponseDto>()
-    return body.results // Extracting the list from the wrapper
-}
-```
-
-### 2. Domain Layer: Repository & Use Case
-
-```kotlin
-// movie/domain/repository/MovieRepository.kt
-interface MovieRepository {
-    suspend fun getMovies(): List<MovieModel>
-}
-
-// movie/domain/usecase/GetMoviesUseCase.kt
-class GetMoviesUseCase(val repository: MovieRepository) {
-    suspend fun invoke(): List<MovieModel> = repository.getMovies()
-}
-```
-
-### 3. Presentation Layer: ViewModel & State
-
-```kotlin
-// movie/presentation/state/MovieUiState.kt
-data class MovieUiState(
+data class MyUiState(
     val isLoading: Boolean = false,
-    val list: List<MovieModel> = emptyList()
+    val items: List<MyModel> = emptyList(),
+    val error: String? = null
 )
+```
 
-// movie/presentation/viewmodel/MovieViewModel.kt
-class MovieViewModel(val moviesUseCase: GetMoviesUseCase) : ViewModel() {
-    private val _state = MutableStateFlow(MovieUiState())
+### 2. The Events (`Event`)
+A `sealed interface` for all user actions.
+```kotlin
+sealed interface MyEvent {
+    data object OnLoadRequested : MyEvent
+    data class OnItemClicked(val id: String) : MyEvent
+}
+```
+
+### 3. The Effects (`Effect`)
+A `sealed interface` for one-time side effects. Use a `Channel` in the ViewModel to emit them.
+```kotlin
+sealed interface MyEffect {
+    data class ShowSnackbar(val message: String) : MyEffect
+    data class NavigateToDetail(val id: String) : MyEffect
+}
+```
+
+### 4. ViewModel Implementation Template
+```kotlin
+class MyViewModel(private val myUseCase: MyUseCase) : ViewModel() {
+    private val _state = MutableStateFlow(MyUiState())
     val state = _state.asStateFlow()
 
-    fun load() {
+    private val _effect = Channel<MyEffect>()
+    val effect = _effect.receiveAsFlow()
+
+    fun onEvent(event: MyEvent) {
+        when(event) {
+            is MyEvent.OnLoadRequested -> loadData()
+            is MyEvent.OnItemClicked -> navigateToDetail(event.id)
+        }
+    }
+
+    private fun loadData() {
         _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            val list = moviesUseCase.invoke()
-            _state.update { it.copy(list = list, isLoading = false) }
+            try {
+                val result = myUseCase.invoke()
+                _state.update { it.copy(items = result, isLoading = false) }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message, isLoading = false) }
+                _effect.send(MyEffect.ShowSnackbar("Error loading data"))
+            }
         }
     }
 }
@@ -132,45 +130,64 @@ class MovieViewModel(val moviesUseCase: GetMoviesUseCase) : ViewModel() {
 
 ---
 
-## Dependency Injection (Koin)
+## 💉 Dependency Injection (Koin)
 
-The DI configuration is split into modules located in `com.ucb.app.di`:
-
-- **`DataModule.kt`**: Defines singletons for ApiServices, DataSources, and Repositories.
-  - *Pattern:* `singleOf(::Implementation).bind<Interface>()`
-- **`DomainModule.kt`**: Defines singletons for Use Cases.
-- **`PresentationModule.kt`**: Defines ViewModels.
-  - *Pattern:* `viewModelOf(::MyViewModel)`
-- **`InitKoin.kt`**: Orchestrates the loading of all modules via `getModules()`.
+DI modules are organized by layer in `com.ucb.food.di`:
+- **`DataModule.kt`**: Services, DataSources, and Repositories.
+    - Pattern: `singleOf(::Implementation).bind<Interface>()`
+- **`DomainModule.kt`**: UseCases.
+    - Pattern: `singleOf(::MyUseCase)`
+- **`PresentationModule.kt`**: ViewModels.
+    - Pattern: `viewModelOf(::MyViewModel)`
+- **`InitKoin.kt`**: Main entry point for starting Koin.
 
 ---
 
-## Implementation Details for Agents
+## 📡 API Handling Patterns
 
-### State Management Template
-When adding new features, follow this pattern:
-1. Define a `MyUiState` data class with defaults.
-2. Define a `MyEvent` sealed interface for user interactions.
-3. In `MyViewModel`, use `MutableStateFlow` to update state via `_state.update { it.copy(...) }`.
-
-### Mapper Convention
-Always use extension functions in the `data/mapper/` package:
+### A. Direct Object Extraction
+When the API returns a single object.
 ```kotlin
-fun MyDto.toModel() = MyModel(...)
+override suspend fun getData(): MyDto {
+    val response = client.get("https://api.example.com/data")
+    return response.body<MyDto>()
+}
 ```
 
-### Resource Management
-Strings and Drawables are managed via `composeResources` (e.g., `Res.string.key`). Use `stringResource(Res.string.key)` in Composables.
+### B. Wrapped List Extraction
+When the API returns a list inside a wrapper object.
+```kotlin
+@Serializable
+data class MyResponseDto(val results: List<MyDto>)
+
+override suspend fun getList(): List<MyDto> {
+    val response = client.get("https://api.example.com/list")
+    val body = response.body<MyResponseDto>()
+    return body.results
+}
+```
 
 ---
 
-## Navigation
+## 🗺 Navigation
+The project uses **Type-Safe Navigation**.
+- **`NavRoute.kt`**: Defines routes as `@Serializable` objects or classes.
+- **`AppNavHost.kt`**: Maps routes to Screen Composables using `composable<NavRoute.X> { ... }`.
+- Navigation should be handled via callbacks (`onNavigateToX`) passed to screens to keep them decoupled from `NavController`.
 
-The project uses **Type-Safe Navigation** from the Jetpack Navigation library.
+---
 
-- **`NavRoute.kt`**: Defines a sealed class with `@Serializable` objects representing each screen.
-- **`AppNavHost.kt`**: Configures the `NavHost` and maps `NavRoute` objects to their respective `@Composable` screens.
+## 🎨 Resources & Styling
+- **Strings**: Use `Res.string.key` with `stringResource()`.
+- **Images**: Use `Res.drawable.key` with `painterResource()`.
+- **Colors & Typography**: Use the **Design System** module (`DsTheme`).
 
-To add a new screen:
-1. Add an `@Serializable` object/class to `NavRoute`.
-2. Register it in `AppNavHost` using `composable<NavRoute.YourScreen> { YourScreen() }`.
+---
+
+## 📝 Best Practices & Rules
+- **No Logic in Composables**: Keep them pure UI.
+- **Extension Mappers**: Always map DTOs to Models in the Data layer.
+- **Immutable State**: Use `copy()` to update `UiState`.
+- **Error Handling**: Don't leak raw exceptions to the UI. Map them to readable error messages.
+- **Constructor Injection**: Always inject dependencies via constructor parameters.
+- **Module Structure**: Keep each feature contained within its own package under `com.ucb.food`.

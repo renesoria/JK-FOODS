@@ -31,4 +31,31 @@ sealed class NavRoute {
 
     @Serializable
     object FirebaseTest: NavRoute()
+
+    @Serializable
+    object Login: NavRoute()
+
+    @Serializable
+    object SignUp: NavRoute()
+
+    @Serializable
+    object Home: NavRoute()
+
+    @Serializable
+    object Onboarding: NavRoute()
+    
+    @Serializable
+    data class RestaurantDetail(val id: String) : NavRoute()
+    
+    @Serializable
+    data class AddReview(val restaurantId: String) : NavRoute()
+    
+    @Serializable
+    object MyReviews: NavRoute()
+
+    @Serializable
+    object Explore: NavRoute()
+
+    @Serializable
+    object DesignSystem: NavRoute()
 }

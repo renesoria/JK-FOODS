@@ -1,18 +1,115 @@
 <resources>
-    <string name="app_name">Food App</string>
+    <string name="app_name">JK Foods</string>
     <string name="explore">Explore</string>
-    <string name="sign_in_title">Sign In</string>
-    <string name="sign_in_email">Email</string>
-    <string name="sign_in_password">Password</string>
-    <string name="sign_in_btn">Sign In</string>
-    <string name="login_title">Sign In</string>
-    <string name="login_email">Email Address</string>
-    <string name="login_password">Password</string>
-    <string name="login_btn">Sign in</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_reviews">Reviews</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_map">Map</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_load_error">Could not load configuration</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_previous">Previous</string>
+    <string name="onboarding_start">Start</string>
+    <string name="onboarding_next">Next</string>
+
+    <!-- Home -->
+    <string name="home_search_placeholder">Search restaurant or food...</string>
+    <string name="home_hot_deals">Hot Deals 🔥</string>
+    <string name="home_explore_places">Explore Places</string>
+    <string name="home_view_all">View all</string>
+    <string name="home_top_ranking">Top Ranking 🏆</string>
+    <string name="home_community_favorites">Community favorites</string>
+    <string name="home_score">Score: %1$s ★</string>
+
+    <!-- Login -->
+    <string name="login_title">Log In</string>
+    <string name="login_email_placeholder">Email Address</string>
+    <string name="login_password_placeholder">Password</string>
+    <string name="login_btn">Log In</string>
+    <string name="login_no_account">Don\'t Have User ID? </string>
+    <string name="login_signup_now">SignUp Now</string>
+
+    <!-- Sign Up -->
+    <string name="signin_title">Sign Up</string>
+    <string name="signin_first_name">First Name</string>
+    <string name="signin_last_name">Last Name</string>
+    <string name="signin_mobile_number">Mobile Number</string>
+    <string name="signin_email">E-Mail ID</string>
+    <string name="signin_gender_placeholder">Male/Female</string>
+    <string name="signin_gender_male">Male</string>
+    <string name="signin_gender_female">Female</string>
+    <string name="signin_address">ADDRESS</string>
+    <string name="signin_button">SignUp</string>
+    <string name="signin_already_account">Already have an Account? </string>
+    <string name="signin_login_link">Login</string>
+
+    <!-- Profile -->
+    <string name="profile_title">My Profile</string>
+    <string name="profile_subtitle">Manage your information and activity</string>
+    <string name="profile_reviews_sent">Reviews sent</string>
+    <string name="profile_my_reviews">My reviews</string>
+    <string name="profile_my_reviews_subtitle">Check the status of your reviews</string>
+    <string name="profile_edit_profile">Edit profile</string>
+    <string name="profile_edit_profile_subtitle">Update your personal information</string>
+    <string name="profile_notifications">Notifications</string>
+    <string name="profile_notifications_subtitle">Configure your preferences</string>
+    <string name="profile_about">About the app</string>
+    <string name="profile_about_subtitle">Version 1.0.0</string>
+    <string name="profile_logout">Logout</string>
+
+    <!-- Profile Edit -->
+    <string name="profile_edit_title">Edit Profile</string>
+    <string name="profile_edit_first_name">First Name</string>
+    <string name="profile_edit_last_name">Last Name</string>
+    <string name="profile_edit_email">Email Address</string>
+    <string name="profile_edit_address">Address</string>
+    <string name="profile_edit_password">New Password</string>
+    <string name="profile_edit_save">Save changes</string>
+
+    <!-- Restaurant Detail -->
+    <string name="restaurant_add_review">Add Review</string>
+    <string name="restaurant_fallback_name">Restaurant</string>
+    <string name="restaurant_reviews_title">People\'s reviews</string>
+    <string name="restaurant_no_reviews">No reviews yet. Be the first!</string>
+    <string name="restaurant_review_at">at %1$s</string>
+
+    <!-- Add Review -->
+    <string name="add_review_branch_question">Which branch did you visit?</string>
+    <string name="add_review_select_branch">Select branch</string>
+    <string name="add_review_place_question">How was the place?</string>
+    <string name="add_review_comment_placeholder">Write your review...</string>
+    <string name="add_review_consumption_question">What did you consume?</string>
+    <string name="add_review_send">Send</string>
+    <string name="add_review_cancel">Cancel</string>
+
+    <!-- My Reviews -->
+    <string name="my_reviews_title">My Reviews</string>
+    <string name="my_reviews_empty">You haven\'t written any reviews yet.</string>
+
+    <!-- Explore -->
+    <string name="explore_title">Explore Restaurants</string>
+    <string name="explore_search_placeholder">Search by name...</string>
+
+    <!-- Chips/Tags -->
+    <string name="chip_parking">🚗 Parking</string>
+    <string name="chip_pet_friendly">🐾 Pet Friendly</string>
+    <string name="chip_fast_service">⚡ Fast</string>
+    <string name="chip_clean">🧼 Clean</string>
+    <string name="chip_wifi">📶 Wi-Fi</string>
+    <string name="chip_payment">💳 QR/Card</string>
+    <string name="chip_kids">🧒 Kids</string>
+    <string name="chip_cozy">🪑 Cozy</string>
+    <string name="chip_fair_price">💰 Fair Price</string>
+
+    <!-- Placeholder/Example from previous -->
     <string name="github_find">Find</string>
     <string name="github_title">Find your Github Avatar</string>
     <string name="github_text_hint">GitHub username</string>
-
     <string name="category_electronics">Electronics</string>
     <string name="category_jewelery">Jewelery</string>
     <string name="category_men_clothing">Men\'s Clothing</string>

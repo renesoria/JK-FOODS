@@ -19,15 +19,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.ucb.food.fakestore.domain.model.StoreModel
+import com.example.designsystem.theme.AppTheme
+
 @Composable
 fun StoreCard(store: StoreModel) {
+    val colors = AppTheme.colors
 
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(6.dp)
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(containerColor = colors.background)
     ) {
 
         Column(
@@ -47,7 +51,7 @@ fun StoreCard(store: StoreModel) {
             Text(
                 text = store.category.uppercase(),
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray
+                color = colors.textPrimary.copy(alpha = 0.6f)
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -55,14 +59,16 @@ fun StoreCard(store: StoreModel) {
             Text(
                 text = store.title,
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2
+                maxLines = 2,
+                color = colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = store.price.toString(),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = colors.textPrimary
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -73,7 +79,8 @@ fun StoreCard(store: StoreModel) {
 
                 Text(
                     text = "⭐ ${store.rating.rate}",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textPrimary
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -81,7 +88,7 @@ fun StoreCard(store: StoreModel) {
                 Text(
                     text = "(${store.rating.count})",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = colors.textPrimary.copy(alpha = 0.6f)
                 )
             }
         }

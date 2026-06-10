@@ -17,6 +17,7 @@ fun FirebaseTestScreen(
 ) {
     var textToSave by remember { mutableStateOf("") }
     val localTodos by viewModel.localTodos.collectAsState()
+    val cachedConfig by viewModel.cachedConfig.collectAsState()
 
     Column(
         modifier = Modifier
@@ -27,19 +28,21 @@ fun FirebaseTestScreen(
         Text("Pruebas Firebase", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Cloud Messaging
-        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
             Column(modifier = Modifier.padding(8.dp)) {
-                Text("Cloud Messaging (FCM)", style = MaterialTheme.typography.titleMedium)
-                Text("Token: ${viewModel.fcmToken}", style = MaterialTheme.typography.bodySmall)
+                Text("Sincronización & Caché Local", style = MaterialTheme.typography.titleMedium)
+                Text("Valor en Room (Caché):", style = MaterialTheme.typography.labelLarge)
+                Text(cachedConfig, style = MaterialTheme.typography.bodyLarge, color = Color.Blue)
+                Text("Si apagas el internet, este valor persistirá.", style = MaterialTheme.typography.bodySmall)
             }
         }
 
-        // Remote Config
+        // Remote Config (Directo)
         Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
             Column(modifier = Modifier.padding(8.dp)) {
-                Text("Remote Config", style = MaterialTheme.typography.titleMedium)
-                Text("Valor de 'texto_bienvenida': ${viewModel.remoteConfigText}")
+                Text("Remote Config (Nube Directa)", style = MaterialTheme.typography.titleMedium)
+                Text("Valor actual: ${viewModel.remoteConfigText}")
             }
         }
 

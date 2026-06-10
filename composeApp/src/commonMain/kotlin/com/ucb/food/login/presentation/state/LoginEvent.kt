@@ -1,11 +1,9 @@
 package com.ucb.food.login.presentation.state
 
 sealed interface LoginEvent {
-    object OnClick: LoginEvent
-    data class OnEmailChanged(
-        val value: String
-    ): LoginEvent
-    data class OnPasswordChanged(
-        val value: String
-    ): LoginEvent
+    data class OnEmailChange(val email: String) : LoginEvent
+    data class OnPasswordChange(val password: String) : LoginEvent
+    data object OnLoginClick : LoginEvent
+    data object OnSignUpClick : LoginEvent
+    data object OnBackClick : LoginEvent
 }

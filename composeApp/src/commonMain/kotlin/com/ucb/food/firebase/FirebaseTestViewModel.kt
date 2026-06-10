@@ -12,10 +12,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import TodoEntity
 import TodoDao
+import ConfigDao
+import ConfigEntity
 
 class FirebaseTestViewModel(
     private val firebaseManager: FirebaseManager,
-    private val todoDao: TodoDao
+    private val todoDao: TodoDao,
+    private val configDao: ConfigDao
 ) : ViewModel() {
 
     var fcmToken by mutableStateOf("Obteniendo...")
@@ -25,10 +28,15 @@ class FirebaseTestViewModel(
     private val _localTodos = MutableStateFlow<List<TodoEntity>>(emptyList())
     val localTodos: StateFlow<List<TodoEntity>> = _localTodos.asStateFlow()
 
+    // Flujo para la configuración cacheada
+    private val _cachedConfig = MutableStateFlow<String>("Sin caché")
+    val cachedConfig: StateFlow<String> = _cachedConfig.asStateFlow()
+
     init {
         loadFcmToken()
         loadRemoteConfig()
         observeLocalDatabase()
+        observeCachedConfig()
     }
 
     private fun loadFcmToken() {
@@ -42,13 +50,28 @@ class FirebaseTestViewModel(
     }
 
     private fun loadRemoteConfig() {
-        remoteConfigText = getRemoteConfigString("texto_bienvenida")
+        viewModelScope.launch {
+            try {
+                remoteConfigText = getRemoteConfigString("texto_bienvenida")
+            } catch (e: Exception) {
+                remoteConfigText = "Error: ${e.message}"
+            }
+        }
     }
 
     private fun observeLocalDatabase() {
         viewModelScope.launch {
             todoDao.getAllAsFlow().collect {
                 _localTodos.value = it
+            }
+        }
+    }
+
+    private fun observeCachedConfig() {
+        viewModelScope.launch {
+            configDao.getAllConfigsFlow().collect { configs ->
+                val welcome = configs.find { it.key == "texto_bienvenida" }
+                _cachedConfig.value = welcome?.value ?: "No hay caché guardada"
             }
         }
     }
