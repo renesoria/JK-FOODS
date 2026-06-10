@@ -1,8 +1,10 @@
 package com.ucb.food.di
 
-fun getModules() = listOf(
+import org.koin.core.module.Module
+
+fun getModules(platformModules: List<Module> = emptyList()) = listOf(
     domainModule,
     presentationModule,
     dataModule,
     databaseModule
-)
+) + platformModules

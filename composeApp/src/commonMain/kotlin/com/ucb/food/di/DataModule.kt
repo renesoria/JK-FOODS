@@ -20,6 +20,7 @@ import com.ucb.food.onboarding.data.repository.OnboardingRepositoryImpl
 import com.ucb.food.onboarding.domain.repository.OnboardingRepository
 import com.ucb.food.restaurant.data.repository.RestaurantRepositoryImpl
 import com.ucb.food.restaurant.domain.repository.RestaurantRepository
+import com.ucb.food.restaurant.data.service.NotificationService
 import com.ucb.food.core.domain.repository.ThemeRepository
 import com.ucb.food.core.data.repository.ThemeRepositoryImpl
 import com.russhwolf.settings.Settings
@@ -67,8 +68,9 @@ val dataModule = module {
     // Theme
     singleOf(::ThemeRepositoryImpl).bind<ThemeRepository>()
 
-    // Restaurant
-    single { RestaurantRepositoryImpl(get()) }.bind<RestaurantRepository>()
+    // Restaurant & Notifications
+    singleOf(::NotificationService)
+    single { RestaurantRepositoryImpl(get(), get()) }.bind<RestaurantRepository>()
 
     single { FirebaseManager() }
 }

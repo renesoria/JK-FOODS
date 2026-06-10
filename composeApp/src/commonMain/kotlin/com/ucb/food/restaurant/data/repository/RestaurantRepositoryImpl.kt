@@ -12,6 +12,7 @@ import com.ucb.food.restaurant.domain.model.HotDealModel
 import com.ucb.food.restaurant.domain.model.RestaurantModel
 import com.ucb.food.restaurant.domain.model.ReviewModel
 import com.ucb.food.restaurant.domain.repository.RestaurantRepository
+import com.ucb.food.restaurant.data.service.NotificationService
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.database.database
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class RestaurantRepositoryImpl(
-    private val restaurantDao: RestaurantDao
+    private val restaurantDao: RestaurantDao,
+    private val notificationService: NotificationService
 ) : RestaurantRepository {
     private val database = Firebase.database.reference()
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
@@ -42,12 +44,8 @@ class RestaurantRepositoryImpl(
     }
 
     override fun getRestaurants(): Flow<List<RestaurantModel>> {
-        // Enriquecemos los restaurantes con el puntaje real de las reviews
         return restaurantDao.getAllRestaurants().map { list -> 
-            val baseList = list.map { it.toModel() }
-            // Por cada restaurante, calculamos su nota real (simplificado: Room no tiene las reviews, 
-            // así que idealmente esto se calcularía en un worker o al sincronizar).
-            baseList
+            list.map { it.toModel() }
         }
     }
 
@@ -107,16 +105,17 @@ class RestaurantRepositoryImpl(
         val finalReview = reviewDto.copy(id = reviewId, timestamp = 0L)
         database.child("reviews").child(branchId).child(reviewId).setValue(finalReview)
         
-        // ACTUALIZACIÓN DE PUNTAJE DINÁMICO
         updateRestaurantRating(review.restaurantId)
     }
 
+    override suspend fun sendFiveStarNotification(restaurantName: String, dishName: String) {
+        notificationService.sendFiveStarNotification(restaurantName, dishName)
+    }
+
     private suspend fun updateRestaurantRating(restaurantId: String) {
-        // 1. Obtener todas las sucursales del restaurante
         val restaurant = restaurantDao.getRestaurantById(restaurantId).first() ?: return
         val branches = restaurant.toModel().branches
         
-        // 2. Recolectar todas las reviews de todas las sucursales (Desde Firebase)
         var totalStars = 0
         var reviewCount = 0
         
@@ -129,10 +128,8 @@ class RestaurantRepositoryImpl(
             }
         }
         
-        // 3. Calcular promedio
         if (reviewCount > 0) {
             val newRating = totalStars.toDouble() / reviewCount
-            // 4. Actualizar en Firebase y Room
             database.child("restaurants").child(restaurantId).child("overallRating").setValue(newRating)
         }
     }
