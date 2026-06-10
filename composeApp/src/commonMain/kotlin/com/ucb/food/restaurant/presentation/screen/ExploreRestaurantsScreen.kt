@@ -30,6 +30,7 @@ import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.round
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,12 +45,12 @@ fun ExploreRestaurantsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { 
+                title = {
                     Text(
-                        stringResource(Res.string.explore_title), 
+                        stringResource(Res.string.explore_title),
                         fontWeight = FontWeight.Bold,
                         color = colors.textPrimary
-                    ) 
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
@@ -158,7 +159,8 @@ fun ExploreRestaurantItem(restaurant: RestaurantModel, onClick: () -> Unit) {
                 Text(text = restaurant.description, fontSize = 12.sp, color = AppTheme.colors.textSecondary, maxLines = 1)
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
                     Text(text = "★", color = AppTheme.colors.primary, fontSize = 14.sp)
-                    Text(text = " ${restaurant.overallRating}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.textPrimary)
+                    val formattedRating = round(restaurant.overallRating * 10) / 10.0
+                    Text(text = " $formattedRating", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.textPrimary)
                 }
             }
             
