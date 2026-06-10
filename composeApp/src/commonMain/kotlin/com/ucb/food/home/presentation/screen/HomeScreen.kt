@@ -46,6 +46,7 @@ fun HomeScreen(
     onNavigateToRestaurantDetail: (String) -> Unit = {},
     onNavigateToExplore: () -> Unit = {},
     onNavigateToDesignSystem: () -> Unit = {},
+    onNavigateToMap: () -> Unit = {},
     onOpenDrawer: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
@@ -60,6 +61,7 @@ fun HomeScreen(
                 is HomeEffect.NavigateToRestaurantDetail -> onNavigateToRestaurantDetail(effect.id)
                 HomeEffect.OpenMenu -> onOpenDrawer()
                 HomeEffect.NavigateToDesignSystem -> onNavigateToDesignSystem()
+                HomeEffect.NavigateToMap -> onNavigateToMap()
             }
         }
     }
@@ -152,7 +154,7 @@ fun HomeScreen(
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Text(text = restaurant.name, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
                                         Spacer(modifier = Modifier.weight(1f))
-                                        Text(text = "? ${restaurant.overallRating}", fontSize = 12.sp, color = colors.primary)
+                                        Text(text = "⭐ ${restaurant.overallRating}", fontSize = 12.sp, color = colors.primary)
                                     }
                                     HorizontalDivider(thickness = 0.5.dp)
                                 }
@@ -320,7 +322,7 @@ fun RestaurantHorizontalCard(restaurant: RestaurantModel, onClick: () -> Unit) {
                 color = colors.textPrimary
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "?", color = colors.primary, fontSize = 12.sp)
+                Text(text = "⭐", color = colors.primary, fontSize = 12.sp)
                 Text(text = " ${restaurant.overallRating}", fontSize = 12.sp, color = colors.textPrimary.copy(alpha = 0.6f))
             }
         }

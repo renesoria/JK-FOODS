@@ -38,7 +38,7 @@ class HomeViewModel(
                     it.copy(
                         isLoading = false,
                         restaurants = list,
-                        filteredRestaurants = filterList(list, it.searchQuery), // Solo para el buscador
+                        filteredRestaurants = filterList(list, it.searchQuery),
                         topRatedRestaurants = list.sortedByDescending { r -> r.overallRating }.take(5),
                         hotDeals = deals
                     ) 
@@ -66,6 +66,9 @@ class HomeViewModel(
             }
             HomeEvent.OnLogoClick -> {
                 viewModelScope.launch { _effect.send(HomeEffect.NavigateToDesignSystem) }
+            }
+            HomeEvent.OnMapClick -> {
+                viewModelScope.launch { _effect.send(HomeEffect.NavigateToMap) }
             }
         }
     }
