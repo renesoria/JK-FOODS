@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.designsystem.theme.AppTheme
 import com.ucb.food.home.presentation.state.HomeEvent
 import com.ucb.food.home.presentation.viewmodel.HomeViewModel
 import com.ucb.food.restaurant.domain.model.RestaurantModel
@@ -38,11 +39,18 @@ fun ExploreRestaurantsScreen(
     onNavigateToDetail: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val colors = AppTheme.colors
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(Res.string.explore_title), fontWeight = FontWeight.Bold) },
+                title = { 
+                    Text(
+                        stringResource(Res.string.explore_title), 
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Canvas(modifier = Modifier.size(24.dp)) {
@@ -53,19 +61,20 @@ fun ExploreRestaurantsScreen(
                                 lineTo(size.width * 0.3f, size.height * 0.5f)
                                 lineTo(size.width * 0.5f, size.height * 0.7f)
                             }
-                            drawPath(path, color = Color.Black, style = Stroke(width = 2.dp.toPx()))
+                            drawPath(path, color = colors.textPrimary, style = Stroke(width = 2.dp.toPx()))
                         }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = colors.background)
             )
-        }
+        },
+        containerColor = colors.background
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFFAFAFA))
+                .background(colors.background)
         ) {
             // Buscador arriba
             OutlinedTextField(
@@ -74,23 +83,29 @@ fun ExploreRestaurantsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholder = { Text(stringResource(Res.string.explore_search_placeholder)) },
+                placeholder = { Text(stringResource(Res.string.explore_search_placeholder), color = colors.textSecondary) },
                 leadingIcon = {
                     Box(modifier = Modifier.size(20.dp)) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
-                            drawCircle(color = Color.Gray, radius = size.minDimension / 3, center = Offset(size.width * 0.4f, size.height * 0.4f), style = Stroke(width = 2f))
-                            drawLine(color = Color.Gray, start = Offset(size.width * 0.6f, size.height * 0.6f), end = Offset(size.width * 0.9f, size.height * 0.9f), strokeWidth = 2f)
+                            drawCircle(color = colors.textSecondary, radius = size.minDimension / 3, center = Offset(size.width * 0.4f, size.height * 0.4f), style = Stroke(width = 2f))
+                            drawLine(color = colors.textSecondary, start = Offset(size.width * 0.6f, size.height * 0.6f), end = Offset(size.width * 0.9f, size.height * 0.9f), strokeWidth = 2f)
                         }
                     }
                 },
                 shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Color(0xFFA67C00)),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = colors.primary,
+                    unfocusedBorderColor = colors.textSecondary.copy(alpha = 0.5f),
+                    focusedTextColor = colors.textPrimary,
+                    unfocusedTextColor = colors.textPrimary,
+                    cursorColor = colors.primary
+                ),
                 singleLine = true
             )
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color(0xFFA67C00))
+                    CircularProgressIndicator(color = colors.primary)
                 }
             } else {
                 LazyColumn(
@@ -117,7 +132,10 @@ fun ExploreRestaurantItem(restaurant: RestaurantModel, onClick: () -> Unit) {
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(
+            containerColor = AppTheme.colors.surface,
+            contentColor = AppTheme.colors.textPrimary
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -136,22 +154,23 @@ fun ExploreRestaurantItem(restaurant: RestaurantModel, onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(16.dp))
             
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = restaurant.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(text = restaurant.description, fontSize = 12.sp, color = Color.Gray, maxLines = 1)
+                Text(text = restaurant.name, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = AppTheme.colors.textPrimary)
+                Text(text = restaurant.description, fontSize = 12.sp, color = AppTheme.colors.textSecondary, maxLines = 1)
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
-                    Text(text = "★", color = Color(0xFFA67C00), fontSize = 14.sp)
-                    Text(text = " ${restaurant.overallRating}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = "★", color = AppTheme.colors.primary, fontSize = 14.sp)
+                    Text(text = " ${restaurant.overallRating}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = AppTheme.colors.textPrimary)
                 }
             }
             
             // Icono flecha para entrar
+            val arrowColor = AppTheme.colors.textSecondary
             Canvas(modifier = Modifier.size(20.dp)) {
                 val path = Path().apply {
                     moveTo(size.width * 0.3f, size.height * 0.3f)
                     lineTo(size.width * 0.7f, size.height * 0.5f)
                     lineTo(size.width * 0.3f, size.height * 0.7f)
                 }
-                drawPath(path, color = Color.LightGray, style = Stroke(width = 2.dp.toPx()))
+                drawPath(path, color = arrowColor, style = Stroke(width = 2.dp.toPx()))
             }
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.designsystem.theme.AppTheme
 
 @Composable
 fun ProfileAvatar(
@@ -23,11 +24,12 @@ fun ProfileAvatar(
     modifier: Modifier = Modifier,
     size: Dp = 80.dp
 ) {
+    val colors = AppTheme.colors
     Box(
         modifier = modifier
             .size(size)
             .clip(CircleShape)
-            .background(Color(0xFFE8F5E9)),
+            .background(colors.surface),
         contentAlignment = Alignment.Center
     ) {
         if (!base64Image.isNullOrBlank()) {
@@ -40,8 +42,8 @@ fun ProfileAvatar(
         } else {
             // Profile Avatar Placeholder
             Canvas(modifier = Modifier.size(size / 2)) {
-                drawCircle(color = Color(0xFF2196F3), radius = this.size.minDimension / 2)
-                drawCircle(color = Color(0xFF2196F3), radius = this.size.minDimension / 4, center = Offset(this.size.width / 2, this.size.height * 0.4f))
+                drawCircle(color = colors.primary, radius = this.size.minDimension / 2)
+                drawCircle(color = colors.primary, radius = this.size.minDimension / 4, center = Offset(this.size.width / 2, this.size.height * 0.4f))
             }
         }
     }

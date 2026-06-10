@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.designsystem.theme.AppTheme
 import com.ucb.food.core.utils.rememberImagePicker
 import com.ucb.food.restaurant.presentation.state.AddReviewEffect
 import com.ucb.food.restaurant.presentation.state.AddReviewEvent
@@ -39,6 +40,7 @@ fun AddReviewScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val colors = AppTheme.colors
 
     LaunchedEffect(restaurantId) {
         viewModel.onEvent(AddReviewEvent.LoadData(restaurantId))
@@ -58,6 +60,7 @@ fun AddReviewScreen(
     }
 
     Scaffold(
+        containerColor = colors.background,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             Row(
@@ -73,14 +76,14 @@ fun AddReviewScreen(
                             lineTo(size.width * 0.3f, size.height * 0.5f)
                             lineTo(size.width * 0.5f, size.height * 0.7f)
                         }
-                        drawPath(path, color = Color(0xFF8B6B11), style = Stroke(width = 2.dp.toPx()))
+                        drawPath(path, color = colors.primary, style = Stroke(width = 2.dp.toPx()))
                     }
                 }
                 Text(
                     text = stringResource(Res.string.restaurant_add_review),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF8B6B11),
+                    color = colors.primary,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
@@ -90,7 +93,7 @@ fun AddReviewScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color.White),
+                .background(colors.background),
             contentPadding = PaddingValues(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -99,6 +102,7 @@ fun AddReviewScreen(
                 Text(
                     text = stringResource(Res.string.add_review_branch_question),
                     fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                     textAlign = TextAlign.Start
                 )
@@ -109,8 +113,8 @@ fun AddReviewScreen(
                         onClick = { expanded = true },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black),
-                        border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(brush = androidx.compose.ui.graphics.SolidColor(Color.LightGray))
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.textPrimary),
+                        border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(brush = androidx.compose.ui.graphics.SolidColor(colors.textSecondary.copy(alpha = 0.5f)))
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -129,7 +133,7 @@ fun AddReviewScreen(
                                     lineTo(size.width / 2, size.height)
                                     close()
                                 }
-                                drawPath(path, color = Color.Gray)
+                                drawPath(path, color = colors.textSecondary)
                             }
                         }
                     }
@@ -137,11 +141,11 @@ fun AddReviewScreen(
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.fillMaxWidth(0.85f).background(Color.White)
+                        modifier = Modifier.fillMaxWidth(0.85f).background(colors.surface)
                     ) {
                         state.branches.forEach { branch ->
                             DropdownMenuItem(
-                                text = { Text(branch.address) },
+                                text = { Text(branch.address, color = colors.textPrimary) },
                                 onClick = {
                                     viewModel.onEvent(AddReviewEvent.OnBranchSelected(branch))
                                     expanded = false
@@ -158,7 +162,7 @@ fun AddReviewScreen(
                     modifier = Modifier
                         .size(150.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFF5F5F5))
+                        .background(colors.surface)
                         .clickable { imagePicker() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -172,8 +176,8 @@ fun AddReviewScreen(
                     } else {
                         // Icono Cámara
                         Canvas(modifier = Modifier.size(48.dp)) {
-                            drawRect(color = Color.Gray, style = Stroke(width = 2.dp.toPx()))
-                            drawCircle(color = Color.Gray, radius = size.minDimension / 4)
+                            drawRect(color = colors.textSecondary, style = Stroke(width = 2.dp.toPx()))
+                            drawCircle(color = colors.textSecondary, radius = size.minDimension / 4)
                         }
                     }
                 }
@@ -190,7 +194,7 @@ fun AddReviewScreen(
                         Text(
                             text = "★",
                             fontSize = 40.sp,
-                            color = if (index <= state.rating) Color(0xFFF0D680) else Color.LightGray,
+                            color = if (index <= state.rating) Color(0xFFF0D680) else colors.textSecondary.copy(alpha = 0.4f),
                             modifier = Modifier.clickable { viewModel.onEvent(AddReviewEvent.OnRatingChanged(index)) }
                         )
                     }
@@ -203,6 +207,7 @@ fun AddReviewScreen(
                 Text(
                     text = stringResource(Res.string.add_review_place_question),
                     fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Start
                 )
@@ -229,10 +234,14 @@ fun AddReviewScreen(
                     value = state.comment,
                     onValueChange = { viewModel.onEvent(AddReviewEvent.OnCommentChanged(it)) },
                     modifier = Modifier.fillMaxWidth().height(120.dp),
-                    placeholder = { Text(stringResource(Res.string.add_review_comment_placeholder)) },
+                    placeholder = { Text(stringResource(Res.string.add_review_comment_placeholder), color = colors.textSecondary) },
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF8B6B11)
+                        focusedBorderColor = colors.primary,
+                        unfocusedBorderColor = colors.textSecondary.copy(alpha = 0.5f),
+                        focusedTextColor = colors.textPrimary,
+                        unfocusedTextColor = colors.textPrimary,
+                        cursorColor = colors.primary
                     )
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -243,6 +252,7 @@ fun AddReviewScreen(
                 Text(
                     text = stringResource(Res.string.add_review_consumption_question),
                     fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Start
                 )
@@ -259,9 +269,12 @@ fun AddReviewScreen(
                     Checkbox(
                         checked = state.selectedDishes.contains(dish.id),
                         onCheckedChange = { viewModel.onEvent(AddReviewEvent.OnDishToggle(dish.id)) },
-                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFF1B5E20))
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = colors.primary,
+                            uncheckedColor = colors.textSecondary
+                        )
                     )
-                    Text(text = dish.name)
+                    Text(text = dish.name, color = colors.textPrimary)
                 }
             }
 
@@ -272,7 +285,7 @@ fun AddReviewScreen(
                     onClick = { viewModel.onEvent(AddReviewEvent.OnSubmitClick) },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5E20)),
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.primary),
                     enabled = !state.isLoading
                 ) {
                     if (state.isLoading) CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
@@ -295,21 +308,22 @@ fun AddReviewScreen(
 
 @Composable
 fun ReviewChip(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    val colors = AppTheme.colors
     FilterChip(
         selected = isSelected,
         onClick = onClick,
         label = { Text(text, fontSize = 12.sp) },
         colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = Color(0xFF2E7D32),
+            selectedContainerColor = colors.primary,
             selectedLabelColor = Color.White,
-            containerColor = Color(0xFFF5F5F5),
-            labelColor = Color.Gray
+            containerColor = colors.surface,
+            labelColor = colors.textSecondary
         ),
         border = FilterChipDefaults.filterChipBorder(
             enabled = true,
             selected = isSelected,
-            borderColor = Color.LightGray,
-            selectedBorderColor = Color(0xFF1B5E20)
+            borderColor = colors.textSecondary.copy(alpha = 0.5f),
+            selectedBorderColor = colors.primary
         ),
         shape = RoundedCornerShape(16.dp)
     )
