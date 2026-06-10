@@ -42,6 +42,16 @@ class MainActivity : ComponentActivity() {
             Log.d("FCM_TOKEN", "Mi Token es: $token")
         }
 
+        // Suscribir a todos los usuarios al tópico de reseñas de 5 estrellas
+        FirebaseMessaging.getInstance().subscribeToTopic("reviews_5_estrellas")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("FCM_TOPIC", "Suscrito con éxito al tópico reviews_5_estrellas")
+                } else {
+                    Log.e("FCM_TOPIC", "Error al suscribirse al tópico")
+                }
+            }
+
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
             minimumFetchIntervalInSeconds = 0

@@ -14,4 +14,7 @@ interface RestaurantRepository {
     fun getReviews(branchId: String): Flow<List<ReviewModel>>
     fun getUserReviews(userId: String): Flow<List<ReviewModel>>
     suspend fun addReview(review: ReviewModel)
+    
+    // Nueva función para la notificación
+    suspend fun sendFiveStarNotification(restaurantName: String, dishName: String)
 }
