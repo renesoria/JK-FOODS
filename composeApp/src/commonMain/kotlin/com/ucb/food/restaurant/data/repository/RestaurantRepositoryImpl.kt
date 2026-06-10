@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.math.round
 
 class RestaurantRepositoryImpl(
     private val restaurantDao: RestaurantDao,
@@ -129,8 +130,9 @@ class RestaurantRepositoryImpl(
         }
         
         if (reviewCount > 0) {
-            val newRating = totalStars.toDouble() / reviewCount
-            database.child("restaurants").child(restaurantId).child("overallRating").setValue(newRating)
+            val rawRating = totalStars.toDouble() / reviewCount
+            val roundedRating = round(rawRating * 10) / 10.0
+            database.child("restaurants").child(restaurantId).child("overallRating").setValue(roundedRating)
         }
     }
 }

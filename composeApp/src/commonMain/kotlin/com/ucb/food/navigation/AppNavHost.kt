@@ -51,6 +51,7 @@ fun AppNavHost(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = currentDestination?.route?.contains("Map") != true,
         drawerContent = {
             NavDrawerContent(
                 onNavigate = { route ->
